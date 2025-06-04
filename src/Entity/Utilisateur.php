@@ -6,10 +6,11 @@ use App\Enum\RoleType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity]
-class Utilisateur implements UserInterface
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,13 +27,14 @@ class Utilisateur implements UserInterface
     private ?string $email = null;
 
     #[ORM\Column(type: 'string', enumType: RoleType::class)]
-    private ?string $role = null;
+    private RoleType $role;
 
     #[ORM\Column(length: 255)]
     private ?string $motDePasse = null;
 
-    #[ORM\ManyToOne(targetEntity: Département::class)]
-    private ?Département $département = null;
+    #[ORM\ManyToOne(targetEntity: Departement::class)]
+    #[ORM\JoinColumn(name: 'département_id', referencedColumnName: 'id')]
+    private ?Departement $departement = null;
 
     #[ORM\ManyToOne(targetEntity: Niveau::class)]
     private ?Niveau $niveau = null;
@@ -95,12 +97,12 @@ class Utilisateur implements UserInterface
         return $this;
     }
 
-    public function getRole(): ?string
+    public function getRole(): RoleType
     {
         return $this->role;
     }
 
-    public function setRole(string $role): self
+    public function setRole(RoleType $role): self
     {
         $this->role = $role;
         return $this;
@@ -117,14 +119,14 @@ class Utilisateur implements UserInterface
         return $this;
     }
 
-    public function getDépartement(): ?Département
+    public function getDepartement(): ?Departement
     {
-        return $this->département;
+        return $this->departement;
     }
 
-    public function setDépartement(?Département $département): self
+    public function setDepartement(?Departement $departement): self
     {
-        $this->département = $département;
+        $this->departement = $departement;
         return $this;
     }
 
@@ -235,10 +237,10 @@ class Utilisateur implements UserInterface
         return $this;
     }
 
-    // UserInterface methods
+    // Méthodes de UserInterface
     public function getRoles(): array
     {
-        return [$this->role];
+        return ['ROLE_' . strtoupper($this->role->value)];
     }
 
     public function getPassword(): ?string
@@ -253,6 +255,6 @@ class Utilisateur implements UserInterface
 
     public function eraseCredentials(): void
     {
-        // No sensitive data to erase
+        // Pas de données sensibles à effacer
     }
 }

@@ -1,0 +1,197 @@
+{# templates/admin/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - Admin{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Tableau de bord Administrateur</h1>
+    <p class="lead">Bienvenue, {{ app.user.prenom }} {{ app.user.nom }}. Gérez l'application UGANC efficacement.</p>
+
+    <!-- Statistiques -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Utilisateurs</h5>
+                    <p class="card-text">{{ userCount }} inscrits</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Cours</h5>
+                    <p class="card-text">{{ coursCount }} actifs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Emplois du Temps</h5>
+                    <p class="card-text">{{ scheduleCount }} planifiés</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Salles</h5>
+                    <p class="card-text">12 disponibles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Administratives -->
+    <div class="mt-5">
+        <h2>Actions Disponibles</h2>
+        <div class="row">
+            <!-- Gestion des Utilisateurs -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="fas fa-users"></i> Gestion des Utilisateurs</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('admin_utilisateur_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list"></i> Liste des Utilisateurs
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion Académique -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="fas fa-graduation-cap"></i> Gestion Académique</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('admin_cours_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-book"></i> Gérer les Cours
+                            </a>
+                            <a href="{{ path('admin_niveau_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-layer-group"></i> Gérer les Niveaux
+                            </a>
+                            <a href="{{ path('admin_departement_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-building"></i> Gérer les Départements
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des Emplois du Temps -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-calendar-alt"></i> Emplois du Temps</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('admin_emploi_du_temps_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list"></i> Liste des Emplois
+                            </a>
+                            <a href="{{ path('admin_emploi_du_temps_calendrier') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-calendar-week"></i> Vue Calendrier
+                            </a>
+                            <a href="{{ path('admin_emploi_du_temps_new') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus"></i> Planifier un Cours
+                            </a>
+                            <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-chart-bar"></i> Analyses & Conflits
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Rapides -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5><i class="fas fa-bolt"></i> Actions Rapides</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-plus"></i><br>
+                                    Planifier un Cours
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ path('admin_emploi_du_temps_calendrier') }}" class="btn btn-success btn-lg w-100 mb-2">
+                                    <i class="fas fa-calendar-week"></i><br>
+                                    Vue Calendrier
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="btn btn-info btn-lg w-100 mb-2">
+                                    <i class="fas fa-chart-line"></i><br>
+                                    Analyses
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ path('admin_cours_new') }}" class="btn btn-warning btn-lg w-100 mb-2">
+                                    <i class="fas fa-book-open"></i><br>
+                                    Nouveau Cours
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- État du Système -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6><i class="fas fa-info-circle"></i> État du Système</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="badge bg-success">Système Opérationnel</span><br>
+                                <small class="text-muted">Tous les services fonctionnent</small>
+                            </div>
+                            <div class="col-6">
+                                <span class="badge bg-info">Base de Données OK</span><br>
+                                <small class="text-muted">Connexion établie</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6><i class="fas fa-clock"></i> Informations</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Date actuelle :</strong> {{ "now"|date('d/m/Y H:i') }}</p>
+                        <p class="mb-1"><strong>Semaine :</strong> Semaine {{ "now"|date('W') }} de {{ "now"|date('Y') }}</p>
+                        <p class="mb-0"><small class="text-muted">Dernière mise à jour : {{ "now"|date('d/m/Y H:i') }}</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton de Déconnexion -->
+    <div class="mt-5 text-center">
+        <a href="{{ path('app_logout') }}" class="btn btn-danger btn-lg">
+            <i class="fas fa-sign-out-alt"></i> Se déconnecter
+        </a>
+    </div>
+</div>
+{% endblock %}

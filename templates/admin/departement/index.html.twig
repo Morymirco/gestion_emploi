@@ -1,0 +1,54 @@
+{# templates/admin/departement/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Départements{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Gestion des Départements</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="mb-3">
+        <a href="{{ path('admin_departement_new') }}" class="btn btn-primary">Ajouter un Département</a>
+        <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Retour au Tableau de Bord</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Nom du Département</th>
+                <th>Nombre d'Utilisateurs</th>
+                <th>Nombre de Cours</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for département in départements %}
+                <tr>
+                    <td>{{ département.id }}</td>
+                    <td><span class="badge bg-info">{{ département.code }}</span></td>
+                    <td>{{ département.nomDepartement }}</td>
+                    <td>{{ département.utilisateurs|length }}</td>
+                    <td>{{ département.cours|length }}</td>
+                    <td>
+                        <a href="{{ path('admin_departement_edit', {'id': département.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <form method="post" action="{{ path('admin_departement_delete', {'id': département.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce département ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ département.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">Aucun département trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

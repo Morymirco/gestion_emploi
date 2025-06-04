@@ -23,8 +23,9 @@ class Cours
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'cours')]
     private ?Utilisateur $enseignant = null;
 
-    #[ORM\ManyToOne(targetEntity: Département::class, inversedBy: 'cours')]
-    private ?Département $département = null;
+    #[ORM\ManyToOne(targetEntity: Departement::class, inversedBy: 'cours')]
+    #[ORM\JoinColumn(name: 'département_id', referencedColumnName: 'id')]
+    private ?Departement $departement = null;
 
     #[ORM\ManyToOne(targetEntity: Niveau::class, inversedBy: 'cours')]
     private ?Niveau $niveau = null;
@@ -79,14 +80,14 @@ class Cours
         return $this;
     }
 
-    public function getDépartement(): ?Département
+    public function getDepartement(): ?Departement
     {
-        return $this->département;
+        return $this->departement;
     }
 
-    public function setDépartement(?Département $département): self
+    public function setDepartement(?Departement $departement): self
     {
-        $this->département = $département;
+        $this->departement = $departement;
         return $this;
     }
 

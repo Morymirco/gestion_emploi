@@ -1,0 +1,337 @@
+{# templates/admin/emploi_du_temps/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'Emploi du Temps{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> Modifier l'Emploi du Temps</h4>
+                    <p class="mb-0 text-muted">
+                        Cours du {{ emploiDuTemps.date|date('d/m/Y') }} de {{ emploiDuTemps.heureDebut|date('H:i') }} à {{ emploiDuTemps.heureFin|date('H:i') }}
+                    </p>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'id': 'emploi-form'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.date) }}
+                                {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.date) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.heureDebut) }}
+                                {{ form_widget(form.heureDebut, {'attr': {'class': 'form-control', 'id': 'heure-debut'}}) }}
+                                {{ form_errors(form.heureDebut) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.heureFin) }}
+                                {{ form_widget(form.heureFin, {'attr': {'class': 'form-control', 'id': 'heure-fin'}}) }}
+                                {{ form_errors(form.heureFin) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.duree) }}
+                                {{ form_widget(form.duree, {'attr': {'class': 'form-control', 'id': 'duree', 'readonly': true}}) }}
+                                <small class="form-text text-muted">Calculée automatiquement</small>
+                                {{ form_errors(form.duree) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.cours) }}
+                                {{ form_widget(form.cours, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.cours) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.salle) }}
+                                {{ form_widget(form.salle, {'attr': {'class': 'form-control', 'id': 'salle-select'}}) }}
+                                {{ form_errors(form.salle) }}
+                                <div id="salle-info" class="mt-2"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.departement) }}
+                                {{ form_widget(form.departement, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.departement) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.niveau) }}
+                                {{ form_widget(form.niveau, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.niveau) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerte de validation -->
+                    <div id="validation-alert" class="alert alert-warning d-none" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="validation-message"></span>
+                    </div>
+
+                    <!-- Informations actuelles -->
+                    <div class="card bg-light mb-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-info-circle"></i> Informations Actuelles</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Date actuelle :</strong> {{ emploiDuTemps.date|date('d/m/Y l') }}<br>
+                                    <strong>Horaire actuel :</strong> {{ emploiDuTemps.heureDebut|date('H:i') }} - {{ emploiDuTemps.heureFin|date('H:i') }}<br>
+                                    <strong>Durée actuelle :</strong> {{ emploiDuTemps.durée }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Cours actuel :</strong> {{ emploiDuTemps.cours ? emploiDuTemps.cours.nomCours : 'Non défini' }}<br>
+                                    <strong>Salle actuelle :</strong> {{ emploiDuTemps.salle ? emploiDuTemps.salle.nomSalle : 'Non définie' }}<br>
+                                    <strong>Département :</strong> {{ emploiDuTemps.departement ? emploiDuTemps.departement.nomDepartement : 'Non défini' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aperçu des modifications -->
+                    <div class="card bg-info text-white mb-3" id="apercu-modifications" style="display: none;">
+                        <div class="card-header">
+                            <h6><i class="fas fa-eye"></i> Aperçu des Modifications</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Nouvelle date :</strong> <span id="nouvelle-date"></span><br>
+                                    <strong>Nouvel horaire :</strong> <span id="nouvel-horaire"></span><br>
+                                    <strong>Nouvelle durée :</strong> <span id="nouvelle-duree"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Nouveau cours :</strong> <span id="nouveau-cours"></span><br>
+                                    <strong>Nouvelle salle :</strong> <span id="nouvelle-salle"></span><br>
+                                    <strong>Nouveau département :</strong> <span id="nouveau-departement"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_emploi_du_temps_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Annuler
+                        </a>
+                        <div>
+                            <button type="submit" class="btn btn-primary me-2" id="submit-btn">
+                                <i class="fas fa-save"></i> Enregistrer les Modifications
+                            </button>
+                            <form method="post" 
+                                  action="{{ path('admin_emploi_du_temps_delete', {'id': emploiDuTemps.id}) }}" 
+                                  style="display:inline;" 
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet emploi du temps ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ emploiDuTemps.id) }}">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Historique des modifications (simulé) -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-history"></i> Historique de ce Cours</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">Création</h6>
+                                <p class="timeline-description">
+                                    Cours créé le {{ emploiDuTemps.date|date('d/m/Y') }} 
+                                    {% if emploiDuTemps.cours %}
+                                        pour {{ emploiDuTemps.cours.nomCours }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">En cours de modification</h6>
+                                <p class="timeline-description">
+                                    Modification en cours par {{ app.user.prenom }} {{ app.user.nom }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -35px;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 3px #dee2e6;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 15px;
+    height: calc(100% + 5px);
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+.timeline-item:last-child:before {
+    display: none;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const heureDebut = document.getElementById('heure-debut');
+    const heureFin = document.getElementById('heure-fin');
+    const dureeField = document.getElementById('duree');
+    const validationAlert = document.getElementById('validation-alert');
+    const validationMessage = document.getElementById('validation-message');
+    const apercuModifications = document.getElementById('apercu-modifications');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // Valeurs initiales pour détecter les changements
+    const valeursInitiales = {
+        date: document.querySelector('[name="emploi_du_temps_form_type[date]"]').value,
+        heureDebut: heureDebut.value,
+        heureFin: heureFin.value,
+        cours: document.querySelector('[name="emploi_du_temps_form_type[cours]"]').value,
+        salle: document.querySelector('[name="emploi_du_temps_form_type[salle]"]').value,
+        departement: document.querySelector('[name="emploi_du_temps_form_type[departement]"]').value
+    };
+
+    // Calcul automatique de la durée (même fonction que dans new.html.twig)
+    function calculerDuree() {
+        if (heureDebut.value && heureFin.value) {
+            const debut = new Date('2000-01-01T' + heureDebut.value);
+            const fin = new Date('2000-01-01T' + heureFin.value);
+            
+            if (fin > debut) {
+                const diff = fin - debut;
+                const heures = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                dureeField.value = heures.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+                
+                validationAlert.classList.add('d-none');
+                submitBtn.disabled = false;
+                detecterChangements();
+            } else {
+                dureeField.value = '';
+                afficherErreur('L\'heure de fin doit être postérieure à l\'heure de début.');
+                submitBtn.disabled = true;
+            }
+        }
+    }
+
+    function afficherErreur(message) {
+        validationMessage.textContent = message;
+        validationAlert.classList.remove('d-none');
+    }
+
+    function detecterChangements() {
+        const valeursActuelles = {
+            date: document.querySelector('[name="emploi_du_temps_form_type[date]"]').value,
+            heureDebut: heureDebut.value,
+            heureFin: heureFin.value,
+            cours: document.querySelector('[name="emploi_du_temps_form_type[cours]"]').value,
+            salle: document.querySelector('[name="emploi_du_temps_form_type[salle]"]').value,
+            departement: document.querySelector('[name="emploi_du_temps_form_type[departement]"]').value
+        };
+
+        let modifications = false;
+        
+        for (let key in valeursInitiales) {
+            if (valeursInitiales[key] !== valeursActuelles[key]) {
+                modifications = true;
+                break;
+            }
+        }
+
+        if (modifications) {
+            mettreAJourApercuModifications(valeursActuelles);
+            apercuModifications.style.display = 'block';
+        } else {
+            apercuModifications.style.display = 'none';
+        }
+    }
+
+    function mettreAJourApercuModifications(valeurs) {
+        const date = valeurs.date;
+        const coursSelect = document.querySelector('[name="emploi_du_temps_form_type[cours]"] option:checked');
+        const salleSelect = document.querySelector('[name="emploi_du_temps_form_type[salle]"] option:checked');
+        const departementSelect = document.querySelector('[name="emploi_du_temps_form_type[departement]"] option:checked');
+
+        document.getElementById('nouvelle-date').textContent = date ? new Date(date).toLocaleDateString('fr-FR') : 'Non modifiée';
+        document.getElementById('nouvel-horaire').textContent = heureDebut.value && heureFin.value ? 
+            heureDebut.value + ' - ' + heureFin.value : 'Non modifié';
+        document.getElementById('nouvelle-duree').textContent = dureeField.value || 'Non modifiée';
+        document.getElementById('nouveau-cours').textContent = coursSelect ? coursSelect.text : 'Non modifié';
+        document.getElementById('nouvelle-salle').textContent = salleSelect ? salleSelect.text : 'Non modifiée';
+        document.getElementById('nouveau-departement').textContent = departementSelect ? departementSelect.text : 'Non modifié';
+    }
+
+    // Event listeners
+    heureDebut.addEventListener('change', calculerDuree);
+    heureFin.addEventListener('change', calculerDuree);
+
+    // Détection des changements sur tous les champs
+    document.querySelectorAll('select, input').forEach(function(element) {
+        element.addEventListener('change', detecterChangements);
+    });
+
+    // Calcul initial de la durée
+    calculerDuree();
+});
+</script>
+{% endblock %} 

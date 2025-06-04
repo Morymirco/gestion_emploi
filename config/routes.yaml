@@ -1,3 +1,101 @@
-controllers:
-    resource: ../src/Controller/
-    type: attribute
+# config/routes.yaml
+app_login:
+    path: /login
+    controller: App\Controller\AuthController::login
+
+app_register:
+    path: /register
+    controller: App\Controller\AuthController::register
+
+app_logout:
+    path: /logout
+    controller: App\Controller\AuthController::logout
+
+app_home:
+    path: /
+    controller: App\Controller\AuthController::home
+
+app_admin_dashboard:
+    path: /admin/dashboard
+    controller: App\Controller\AuthController::adminDashboard
+
+app_enseignant_dashboard:
+    path: /enseignant/dashboard
+    controller: App\Controller\AuthController::enseignantDashboard
+
+app_etudiant_dashboard:
+    path: /etudiant/dashboard
+    controller: App\Controller\AuthController::etudiantDashboard
+
+admin_utilisateur_index:
+    path: /admin/utilisateur
+    controller: App\Controller\AdminUtilisateurController::index
+
+admin_utilisateur_new:
+    path: /admin/utilisateur/new
+    controller: App\Controller\AdminUtilisateurController::new
+
+admin_utilisateur_edit:
+    path: /admin/utilisateur/{id}/edit
+    controller: App\Controller\AdminUtilisateurController::edit
+
+admin_utilisateur_delete:
+    path: /admin/utilisateur/{id}/delete
+    controller: App\Controller\AdminUtilisateurController::delete
+    methods: [POST]
+
+admin_niveau_index:
+    path: /admin/niveau
+    controller: App\Controller\AdminNiveauController::index
+
+admin_niveau_new:
+    path: /admin/niveau/new
+    controller: App\Controller\AdminNiveauController::new
+
+admin_niveau_edit:
+    path: /admin/niveau/{id}/edit
+    controller: App\Controller\AdminNiveauController::edit
+
+admin_niveau_delete:
+    path: /admin/niveau/{id}/delete
+    controller: App\Controller\AdminNiveauController::delete
+    methods: [POST]
+
+admin_cours_index:
+    path: /admin/cours
+    controller: App\Controller\AdminCoursController::index
+
+admin_cours_new:
+    path: /admin/cours/new
+    controller: App\Controller\AdminCoursController::new
+
+admin_cours_edit:
+    path: /admin/cours/{id}/edit    
+    controller: App\Controller\AdminCoursController::edit
+
+admin_cours_delete:
+    path: /admin/cours/{id}/delete
+    controller: App\Controller\AdminCoursController::delete
+    methods: [POST]
+
+admin_emploi_du_temps_index:
+    path: /admin/emploi-du-temps
+    controller: App\Controller\AdminEmploiDuTempsController::index    
+
+admin_departement_index:
+    path: /admin/departement
+    controller: App\Controller\AdminDepartementController::index
+
+admin_departement_new:
+    path: /admin/departement/new
+    controller: App\Controller\AdminDepartementController::new
+
+admin_departement_edit:
+    path: /admin/departement/{id}/edit
+    controller: App\Controller\AdminDepartementController::edit
+
+admin_departement_delete:
+    path: /admin/departement/{id}/delete
+    controller: App\Controller\AdminDepartementController::delete
+    methods: [POST]
+

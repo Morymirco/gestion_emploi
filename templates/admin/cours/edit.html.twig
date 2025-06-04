@@ -1,0 +1,40 @@
+{# templates/admin/cours/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Cours{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Modifier le Cours : {{ cours.nomCours }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="mb-3">
+        <a href="{{ path('admin_cours_index') }}" class="btn btn-secondary">Retour à la Liste</a>
+    </div>
+
+    {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+        <div class="col-md-6">
+            {{ form_row(form.nomCours) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.enseignant) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.departement) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.niveau) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.description) }}
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Mettre à Jour</button>
+            <a href="{{ path('admin_cours_index') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %} 

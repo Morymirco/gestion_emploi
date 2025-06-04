@@ -1,0 +1,236 @@
+{# templates/admin/emploi_du_temps/calendrier.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier des Emplois du Temps{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .planning-grid {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .planning-grid th, .planning-grid td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+        vertical-align: top;
+        height: 60px;
+    }
+    .planning-grid th {
+        background-color: #f8f9fa;
+        text-align: center;
+        font-weight: bold;
+    }
+    .heure-column {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        text-align: center;
+        width: 80px;
+    }
+    .cours-item {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border-radius: 4px;
+        padding: 4px 6px;
+        margin: 2px 0;
+        font-size: 11px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .cours-item:hover {
+        transform: scale(1.02);
+    }
+    .cours-info {
+        font-weight: bold;
+        display: block;
+    }
+    .cours-details {
+        font-size: 10px;
+        opacity: 0.9;
+    }
+    .navigation-week {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .navigation-week .btn {
+        margin: 0 10px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-calendar-week"></i> Calendrier des Emplois du Temps</h1>
+            
+            <!-- Navigation -->
+            <div class="mb-4">
+                <a href="{{ path('admin_emploi_du_temps_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Vue Liste
+                </a>
+                <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Planifier un Cours
+                </a>
+                <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="btn btn-info">
+                    <i class="fas fa-chart-bar"></i> Analyses
+                </a>
+            </div>
+
+            <!-- Navigation semaine -->
+            <div class="navigation-week">
+                {% set previousWeek = semaine|date_modify('-1 week')|date('Y-m-d') %}
+                {% set nextWeek = semaine|date_modify('+1 week')|date('Y-m-d') %}
+                
+                <a href="{{ path('admin_emploi_du_temps_calendrier', {'semaine': previousWeek}) }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-left"></i> Semaine précédente
+                </a>
+                
+                <span class="badge bg-primary fs-6 mx-3">
+                    Semaine du {{ semaineFormatted }}
+                </span>
+                
+                <a href="{{ path('admin_emploi_du_temps_calendrier', {'semaine': nextWeek}) }}" 
+                   class="btn btn-outline-primary">
+                    Semaine suivante <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <!-- Calendrier -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar"></i> Planning de la semaine</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="planning-grid">
+                            <thead>
+                                <tr>
+                                    <th class="heure-column">Heure</th>
+                                    {% for jour in jours %}
+                                        <th>{{ jour }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for heure in heures %}
+                                    <tr>
+                                        <td class="heure-column">{{ heure }}</td>
+                                        {% for jour in jours %}
+                                            <td>
+                                                {% if planning[jour][heure] is defined %}
+                                                    {% for emploi in planning[jour][heure] %}
+                                                        <div class="cours-item" 
+                                                             data-bs-toggle="tooltip" 
+                                                             data-bs-placement="top"
+                                                             title="Durée: {{ emploi.durée }} | Salle: {{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}">
+                                                            <span class="cours-info">
+                                                                {{ emploi.cours ? emploi.cours.nomCours : 'Cours non défini' }}
+                                                            </span>
+                                                            <div class="cours-details">
+                                                                {% if emploi.salle %}
+                                                                    📍 {{ emploi.salle.nomSalle }}
+                                                                {% endif %}
+                                                                {% if emploi.niveau %}
+                                                                    | {{ emploi.niveau.nomNiveau }}
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="cours-details">
+                                                                {{ emploi.heureDebut|date('H:i') }} - {{ emploi.heureFin|date('H:i') }}
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Légende -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle"></i> Légende</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="cours-item mb-2" style="display: inline-block;">
+                                <span class="cours-info">Cours Programmé</span>
+                                <div class="cours-details">📍 Salle | Niveau</div>
+                                <div class="cours-details">Heure début - Heure fin</div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="mb-0">
+                                • Cliquez sur les éléments pour voir plus de détails<br>
+                                • Les conflits d'horaires sont automatiquement détectés dans la vue d'analyse<br>
+                                • Utilisez les boutons de navigation pour changer de semaine
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-bolt"></i> Actions Rapides</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i><br>
+                                Ajouter un Cours
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('admin_emploi_du_temps_calendrier', {'semaine': 'now'|date('Y-m-d')}) }}" 
+                               class="btn btn-success w-100">
+                                <i class="fas fa-calendar-day"></i><br>
+                                Semaine Actuelle
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="btn btn-info w-100">
+                                <i class="fas fa-chart-line"></i><br>
+                                Voir les Analyses
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('admin_emploi_du_temps_index') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-table"></i><br>
+                                Vue Détaillée
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialisation des tooltips Bootstrap
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Ajout de la fonctionnalité de clic sur les cours
+    document.querySelectorAll('.cours-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            // Ici on pourrait ajouter une modal avec plus de détails
+            console.log('Cours cliqué:', this.textContent);
+        });
+    });
+});
+</script>
+{% endblock %} 

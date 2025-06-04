@@ -1,0 +1,31 @@
+{# templates/admin/niveau/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Niveau{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Modifier le Niveau : {{ niveau.nomNiveau }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="mb-3">
+        <a href="{{ path('admin_niveau_index') }}" class="btn btn-secondary">Retour à la Liste</a>
+    </div>
+
+    {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+        <div class="col-md-6">
+            {{ form_row(form.nomNiveau) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.code) }}
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Mettre à Jour</button>
+            <a href="{{ path('admin_niveau_index') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %} 

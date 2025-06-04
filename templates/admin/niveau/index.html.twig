@@ -1,0 +1,54 @@
+{# templates/admin/niveau/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Niveaux{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Gestion des Niveaux</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="mb-3">
+        <a href="{{ path('admin_niveau_new') }}" class="btn btn-primary">Ajouter un Niveau</a>
+        <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Retour au Tableau de Bord</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Nom du Niveau</th>
+                <th>Nombre d'Étudiants</th>
+                <th>Nombre de Cours</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for niveau in niveaux %}
+                <tr>
+                    <td>{{ niveau.id }}</td>
+                    <td><span class="badge bg-primary">{{ niveau.code }}</span></td>
+                    <td>{{ niveau.nomNiveau }}</td>
+                    <td>{{ niveau.utilisateurs|length }}</td>
+                    <td>{{ niveau.cours|length }}</td>
+                    <td>
+                        <a href="{{ path('admin_niveau_edit', {'id': niveau.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <form method="post" action="{{ path('admin_niveau_delete', {'id': niveau.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce niveau ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ niveau.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">Aucun niveau trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

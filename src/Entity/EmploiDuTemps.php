@@ -30,8 +30,9 @@ class EmploiDuTemps
     #[ORM\ManyToOne(targetEntity: Salle::class, inversedBy: 'emploiDuTemps')]
     private ?Salle $salle = null;
 
-    #[ORM\ManyToOne(targetEntity: Département::class, inversedBy: 'emploiDuTemps')]
-    private ?Département $département = null;
+    #[ORM\ManyToOne(targetEntity: Departement::class, inversedBy: 'emploiDuTemps')]
+    #[ORM\JoinColumn(name: 'département_id', referencedColumnName: 'id')]
+    private ?Departement $departement = null;
 
     #[ORM\ManyToOne(targetEntity: Niveau::class, inversedBy: 'emploiDuTemps')]
     private ?Niveau $niveau = null;
@@ -107,14 +108,14 @@ class EmploiDuTemps
         return $this;
     }
 
-    public function getDépartement(): ?Département
+    public function getDepartement(): ?Departement
     {
-        return $this->département;
+        return $this->departement;
     }
 
-    public function setDépartement(?Département $département): self
+    public function setDepartement(?Departement $departement): self
     {
-        $this->département = $département;
+        $this->departement = $departement;
         return $this;
     }
 

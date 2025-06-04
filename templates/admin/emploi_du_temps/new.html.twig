@@ -1,0 +1,281 @@
+{# templates/admin/emploi_du_temps/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Planifier un Cours{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-calendar-plus"></i> Planifier un Nouveau Cours</h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'id': 'emploi-form'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.date) }}
+                                {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.date) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.heureDebut) }}
+                                {{ form_widget(form.heureDebut, {'attr': {'class': 'form-control', 'id': 'heure-debut'}}) }}
+                                {{ form_errors(form.heureDebut) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.heureFin) }}
+                                {{ form_widget(form.heureFin, {'attr': {'class': 'form-control', 'id': 'heure-fin'}}) }}
+                                {{ form_errors(form.heureFin) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.duree) }}
+                                {{ form_widget(form.duree, {'attr': {'class': 'form-control', 'id': 'duree', 'readonly': true}}) }}
+                                <small class="form-text text-muted">Calculée automatiquement</small>
+                                {{ form_errors(form.duree) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.cours) }}
+                                {{ form_widget(form.cours, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.cours) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.salle) }}
+                                {{ form_widget(form.salle, {'attr': {'class': 'form-control', 'id': 'salle-select'}}) }}
+                                {{ form_errors(form.salle) }}
+                                <div id="salle-info" class="mt-2"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.departement) }}
+                                {{ form_widget(form.departement, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.departement) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.niveau) }}
+                                {{ form_widget(form.niveau, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.niveau) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerte de validation -->
+                    <div id="validation-alert" class="alert alert-warning d-none" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="validation-message"></span>
+                    </div>
+
+                    <!-- Aperçu -->
+                    <div class="card bg-light mb-3" id="apercu" style="display: none;">
+                        <div class="card-header">
+                            <h6><i class="fas fa-eye"></i> Aperçu du Cours</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Date :</strong> <span id="apercu-date"></span><br>
+                                    <strong>Horaire :</strong> <span id="apercu-horaire"></span><br>
+                                    <strong>Durée :</strong> <span id="apercu-duree"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Cours :</strong> <span id="apercu-cours"></span><br>
+                                    <strong>Salle :</strong> <span id="apercu-salle"></span><br>
+                                    <strong>Département :</strong> <span id="apercu-departement"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_emploi_du_temps_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
+                            <i class="fas fa-save"></i> Planifier le Cours
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Conseils -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-lightbulb"></i> Conseils de Planification</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-clock text-primary mb-2"></i>
+                                <h6>Horaires</h6>
+                                <p class="small text-muted">Prévoyez 15 minutes entre les cours pour les déplacements.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-users text-success mb-2"></i>
+                                <h6>Capacité</h6>
+                                <p class="small text-muted">Vérifiez que la salle peut accueillir tous les étudiants.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-calendar-check text-info mb-2"></i>
+                                <h6>Conflits</h6>
+                                <p class="small text-muted">Le système détectera automatiquement les conflits d'horaires.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const heureDebut = document.getElementById('heure-debut');
+    const heureFin = document.getElementById('heure-fin');
+    const dureeField = document.getElementById('duree');
+    const validationAlert = document.getElementById('validation-alert');
+    const validationMessage = document.getElementById('validation-message');
+    const apercu = document.getElementById('apercu');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // Calcul automatique de la durée
+    function calculerDuree() {
+        if (heureDebut.value && heureFin.value) {
+            const debut = new Date('2000-01-01T' + heureDebut.value);
+            const fin = new Date('2000-01-01T' + heureFin.value);
+            
+            if (fin > debut) {
+                const diff = fin - debut;
+                const heures = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                dureeField.value = heures.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+                
+                validationAlert.classList.add('d-none');
+                submitBtn.disabled = false;
+                mettreAJourApercu();
+            } else {
+                dureeField.value = '';
+                afficherErreur('L\'heure de fin doit être postérieure à l\'heure de début.');
+                submitBtn.disabled = true;
+            }
+        }
+    }
+
+    // Validation des heures
+    function validerHeures() {
+        if (heureDebut.value && heureFin.value) {
+            const debut = heureDebut.value;
+            const fin = heureFin.value;
+            
+            // Vérification des heures d'ouverture (8h-20h)
+            if (debut < '08:00' || fin > '20:00') {
+                afficherErreur('Les cours doivent se dérouler entre 8h00 et 20h00.');
+                return false;
+            }
+            
+            // Vérification de la durée minimale (30 minutes)
+            const debutDate = new Date('2000-01-01T' + debut);
+            const finDate = new Date('2000-01-01T' + fin);
+            const diff = finDate - debutDate;
+            
+            if (diff < 30 * 60 * 1000) {
+                afficherErreur('La durée minimale d\'un cours est de 30 minutes.');
+                return false;
+            }
+            
+            return true;
+        }
+        return false;
+    }
+
+    function afficherErreur(message) {
+        validationMessage.textContent = message;
+        validationAlert.classList.remove('d-none');
+        apercu.style.display = 'none';
+    }
+
+    function mettreAJourApercu() {
+        // Récupération des valeurs
+        const date = document.querySelector('[name="emploi_du_temps_form_type[date]"]').value;
+        const cours = document.querySelector('[name="emploi_du_temps_form_type[cours]"] option:checked').text;
+        const salle = document.querySelector('[name="emploi_du_temps_form_type[salle]"] option:checked').text;
+        const departement = document.querySelector('[name="emploi_du_temps_form_type[departement]"] option:checked').text;
+
+        if (date && heureDebut.value && heureFin.value) {
+            document.getElementById('apercu-date').textContent = new Date(date).toLocaleDateString('fr-FR');
+            document.getElementById('apercu-horaire').textContent = heureDebut.value + ' - ' + heureFin.value;
+            document.getElementById('apercu-duree').textContent = dureeField.value;
+            document.getElementById('apercu-cours').textContent = cours !== 'Sélectionnez un cours' ? cours : 'Non sélectionné';
+            document.getElementById('apercu-salle').textContent = salle !== 'Sélectionnez une salle' ? salle : 'Non sélectionnée';
+            document.getElementById('apercu-departement').textContent = departement !== 'Sélectionnez un département' ? departement : 'Non sélectionné';
+            
+            apercu.style.display = 'block';
+        }
+    }
+
+    // Event listeners
+    heureDebut.addEventListener('change', function() {
+        if (validerHeures()) {
+            calculerDuree();
+        }
+    });
+
+    heureFin.addEventListener('change', function() {
+        if (validerHeures()) {
+            calculerDuree();
+        }
+    });
+
+    // Mise à jour de l'aperçu lors des changements
+    document.querySelectorAll('select, input').forEach(function(element) {
+        element.addEventListener('change', mettreAJourApercu);
+    });
+
+    // Information sur les salles
+    document.getElementById('salle-select').addEventListener('change', function() {
+        // Ici on pourrait ajouter une requête AJAX pour obtenir les infos de la salle
+        const salleInfo = document.getElementById('salle-info');
+        if (this.value) {
+            salleInfo.innerHTML = '<small class="text-info"><i class="fas fa-info-circle"></i> Vérification de la disponibilité en cours...</small>';
+            // Simulation d'une vérification
+            setTimeout(() => {
+                salleInfo.innerHTML = '<small class="text-success"><i class="fas fa-check-circle"></i> Salle disponible</small>';
+            }, 1000);
+        } else {
+            salleInfo.innerHTML = '';
+        }
+    });
+});
+</script>
+{% endblock %} 

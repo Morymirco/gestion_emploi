@@ -1,0 +1,12 @@
+{# templates/enseignant/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - Enseignant{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Bienvenue, Enseignant !</h1>
+    <p>Vous êtes connecté en tant qu'enseignant.</p>
+    <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+</div>
+{% endblock %}

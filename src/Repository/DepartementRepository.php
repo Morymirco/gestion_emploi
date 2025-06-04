@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\Département;
+use App\Entity\Departement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Département>
+ * @extends ServiceEntityRepository<Departement>
  *
- * @method Département|null find($id, $lockMode = null, $lockVersion = null)
- * @method Département|null findOneBy(array $criteria, array $orderBy = null)
- * @method Département[]    findAll()
- * @method Département[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Departement|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Departement|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Departement[]    findAll()
+ * @method Departement[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class DépartementRepository extends ServiceEntityRepository
+class DepartementRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Département::class);
+        parent::__construct($registry, Departement::class);
     }
 
 //    /**
-//     * @return Département[] Returns an array of Département objects
+//     * @return Departement[] Returns an array of Departement objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class DépartementRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Département
+//    public function findOneBySomeField($value): ?Departement
 //    {
 //        return $this->createQueryBuilder('d')
 //            ->andWhere('d.exampleField = :val')
@@ -45,4 +45,4 @@ class DépartementRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
-}
+} 

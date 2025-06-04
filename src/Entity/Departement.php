@@ -7,26 +7,27 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class Département
+#[ORM\Table(name: 'département')]
+class Departement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $nomDépartement = null;
+    #[ORM\Column(name: 'nom_département', length: 255, unique: true)]
+    private ?string $nomDepartement = null;
 
     #[ORM\Column(length: 10, unique: true)]
     private ?string $code = null;
 
-    #[ORM\OneToMany(targetEntity: Utilisateur::class, mappedBy: 'département')]
+    #[ORM\OneToMany(targetEntity: Utilisateur::class, mappedBy: 'departement')]
     private Collection $utilisateurs;
 
-    #[ORM\OneToMany(targetEntity: Cours::class, mappedBy: 'département')]
+    #[ORM\OneToMany(targetEntity: Cours::class, mappedBy: 'departement')]
     private Collection $cours;
 
-    #[ORM\OneToMany(targetEntity: EmploiDuTemps::class, mappedBy: 'département')]
+    #[ORM\OneToMany(targetEntity: EmploiDuTemps::class, mappedBy: 'departement')]
     private Collection $emploiDuTemps;
 
     public function __construct()
@@ -41,14 +42,14 @@ class Département
         return $this->id;
     }
 
-    public function getNomDépartement(): ?string
+    public function getNomDepartement(): ?string
     {
-        return $this->nomDépartement;
+        return $this->nomDepartement;
     }
 
-    public function setNomDépartement(string $nomDépartement): self
+    public function setNomDepartement(string $nomDepartement): self
     {
-        $this->nomDépartement = $nomDépartement;
+        $this->nomDepartement = $nomDepartement;
         return $this;
     }
 
@@ -72,7 +73,7 @@ class Département
     {
         if (!$this->utilisateurs->contains($utilisateur)) {
             $this->utilisateurs->add($utilisateur);
-            $utilisateur->setDépartement($this);
+            $utilisateur->setDepartement($this);
         }
         return $this;
     }
@@ -80,8 +81,8 @@ class Département
     public function removeUtilisateur(Utilisateur $utilisateur): self
     {
         if ($this->utilisateurs->removeElement($utilisateur)) {
-            if ($utilisateur->getDépartement() === $this) {
-                $utilisateur->setDépartement(null);
+            if ($utilisateur->getDepartement() === $this) {
+                $utilisateur->setDepartement(null);
             }
         }
         return $this;
@@ -96,7 +97,7 @@ class Département
     {
         if (!$this->cours->contains($cour)) {
             $this->cours->add($cour);
-            $cour->setDépartement($this);
+            $cour->setDepartement($this);
         }
         return $this;
     }
@@ -104,8 +105,8 @@ class Département
     public function removeCour(Cours $cour): self
     {
         if ($this->cours->removeElement($cour)) {
-            if ($cour->getDépartement() === $this) {
-                $cour->setDépartement(null);
+            if ($cour->getDepartement() === $this) {
+                $cour->setDepartement(null);
             }
         }
         return $this;
@@ -120,7 +121,7 @@ class Département
     {
         if (!$this->emploiDuTemps->contains($emploiDuTemps)) {
             $this->emploiDuTemps->add($emploiDuTemps);
-            $emploiDuTemps->setDépartement($this);
+            $emploiDuTemps->setDepartement($this);
         }
         return $this;
     }
@@ -128,10 +129,10 @@ class Département
     public function removeEmploiDuTemps(EmploiDuTemps $emploiDuTemps): self
     {
         if ($this->emploiDuTemps->removeElement($emploiDuTemps)) {
-            if ($emploiDuTemps->getDépartement() === $this) {
-                $emploiDuTemps->setDépartement(null);
+            if ($emploiDuTemps->getDepartement() === $this) {
+                $emploiDuTemps->setDepartement(null);
             }
         }
         return $this;
     }
-}
+} 

@@ -1,0 +1,51 @@
+{# templates/admin/utilisateur/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un Utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Ajouter un Utilisateur</h1>
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nom) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.prenom, 'Prénom', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.prenom) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.role, 'Rôle', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.role, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.role) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.motDePasse.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.motDePasse.first, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.motDePasse.first) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.motDePasse.second, 'Confirmez le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.motDePasse.second, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.motDePasse.second) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Créer</button>
+        <a href="{{ path('admin_utilisateur_index') }}" class="btn btn-secondary">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

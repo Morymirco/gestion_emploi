@@ -1,0 +1,194 @@
+{# templates/admin/emploi_du_temps/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Emplois du Temps{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-calendar-alt"></i> Gestion des Emplois du Temps</h1>
+            
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <!-- Boutons d'action -->
+            <div class="mb-4">
+                <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Planifier un Cours
+                </a>
+                <a href="{{ path('admin_emploi_du_temps_calendrier') }}" class="btn btn-success">
+                    <i class="fas fa-calendar-week"></i> Vue Calendrier
+                </a>
+                <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="btn btn-info">
+                    <i class="fas fa-chart-bar"></i> Analyses
+                </a>
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour au Tableau de Bord
+                </a>
+            </div>
+
+            <!-- Filtres -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-filter"></i> Filtres</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="date_debut" class="form-label">Date de début</label>
+                            <input type="date" class="form-control" id="date_debut" name="date_debut" 
+                                   value="{{ filtres.date_debut }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_fin" class="form-label">Date de fin</label>
+                            <input type="date" class="form-control" id="date_fin" name="date_fin" 
+                                   value="{{ filtres.date_fin }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="departement" class="form-label">Département</label>
+                            <select class="form-control" id="departement" name="departement">
+                                <option value="">Tous les départements</option>
+                                {% for departement in departements %}
+                                    <option value="{{ departement.id }}" 
+                                            {% if filtres.departement == departement.id %}selected{% endif %}>
+                                        {{ departement.nomDepartement }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="niveau" class="form-label">Niveau</label>
+                            <select class="form-control" id="niveau" name="niveau">
+                                <option value="">Tous les niveaux</option>
+                                {% for niveau in niveaux %}
+                                    <option value="{{ niveau.id }}" 
+                                            {% if filtres.niveau == niveau.id %}selected{% endif %}>
+                                        {{ niveau.nomNiveau }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Filtrer
+                            </button>
+                            <a href="{{ path('admin_emploi_du_temps_index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Réinitialiser
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tableau des emplois du temps -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> Emplois du Temps ({{ emploisDuTemps|length }} résultats)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Heure</th>
+                                    <th>Durée</th>
+                                    <th>Cours</th>
+                                    <th>Salle</th>
+                                    <th>Département</th>
+                                    <th>Niveau</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emploi in emploisDuTemps %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ emploi.date|date('d/m/Y') }}</strong><br>
+                                            <small class="text-muted">{{ emploi.date|date('l') }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                {{ emploi.heureDebut|date('H:i') }} - {{ emploi.heureFin|date('H:i') }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ emploi.durée }}</span>
+                                        </td>
+                                        <td>
+                                            {% if emploi.cours %}
+                                                <strong>{{ emploi.cours.nomCours }}</strong>
+                                                {% if emploi.cours.enseignant %}
+                                                    <br><small class="text-muted">
+                                                        {{ emploi.cours.enseignant.prenom }} {{ emploi.cours.enseignant.nom }}
+                                                    </small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">Non défini</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if emploi.salle %}
+                                                <span class="badge bg-success">{{ emploi.salle.nomSalle }}</span>
+                                                <br><small class="text-muted">{{ emploi.salle.capacite }} places</small>
+                                            {% else %}
+                                                <span class="text-muted">Non définie</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if emploi.departement %}
+                                                {{ emploi.departement.nomDepartement }}
+                                            {% else %}
+                                                <span class="text-muted">Non défini</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if emploi.niveau %}
+                                                {{ emploi.niveau.nomNiveau }}
+                                            {% else %}
+                                                <span class="text-muted">Non défini</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ path('admin_emploi_du_temps_edit', {'id': emploi.id}) }}" 
+                                                   class="btn btn-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="post" 
+                                                      action="{{ path('admin_emploi_du_temps_delete', {'id': emploi.id}) }}" 
+                                                      style="display:inline;" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet emploi du temps ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ emploi.id) }}">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Aucun emploi du temps trouvé avec ces critères.</p>
+                                            <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus"></i> Créer le premier emploi du temps
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
