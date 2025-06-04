@@ -99,3 +99,130 @@ admin_departement_delete:
     controller: App\Controller\AdminDepartementController::delete
     methods: [POST]
 
+admin_emploi_du_temps_new:
+    path: /admin/emploi-du-temps/new
+    controller: App\Controller\AdminEmploiDuTempsController::new
+
+admin_emploi_du_temps_edit:
+    path: /admin/emploi-du-temps/{id}/edit
+    controller: App\Controller\AdminEmploiDuTempsController::edit
+
+admin_emploi_du_temps_calendrier:
+    path: /admin/emploi-du-temps/calendrier
+    controller: App\Controller\AdminEmploiDuTempsController::calendrier
+
+admin_emploi_du_temps_delete:
+    path: /admin/emploi-du-temps/{id}/delete
+    controller: App\Controller\AdminEmploiDuTempsController::delete
+    methods: [POST]
+
+admin_emploi_du_temps_analyse:
+    path: /admin/emploi-du-temps/analyse
+    controller: App\Controller\AdminEmploiDuTempsController::analyse
+
+admin_emploi_du_temps_export:
+    path: /admin/emploi-du-temps/export
+    controller: App\Controller\AdminEmploiDuTempsController::export
+
+
+admin_salle_index:
+    path: /admin/salle
+    controller: App\Controller\AdminSalleController::index
+
+admin_salle_new:
+    path: /admin/salle/new
+    controller: App\Controller\AdminSalleController::new
+
+admin_salle_edit:
+    path: /admin/salle/{id}/edit
+    controller: App\Controller\AdminSalleController::edit
+
+admin_salle_delete:
+    path: /admin/salle/{id}/delete
+    controller: App\Controller\AdminSalleController::delete
+    methods: [POST]
+
+admin_module_index:
+    path: /admin/module
+    controller: App\Controller\AdminModuleController::index
+
+admin_module_new:
+    path: /admin/module/new
+    controller: App\Controller\AdminModuleController::new
+
+admin_absence_index:
+    path: /admin/absence
+    controller: App\Controller\AdminAbsenceController::index
+
+admin_absence_new:
+    path: /admin/absence/new
+    controller: App\Controller\AdminAbsenceController::new
+
+admin_absence_stats:
+    path: /admin/absence/stats
+    controller: App\Controller\AdminAbsenceController::stats
+
+admin_absence_edit:
+    path: /admin/absence/{id}/edit
+    controller: App\Controller\AdminAbsenceController::edit
+
+admin_module_activate:
+    path: /admin/module/{id}/activate
+    controller: App\Controller\AdminModuleController::activate
+
+admin_module_desactivate:
+    path: /admin/module/{id}/desactivate
+    controller: App\Controller\AdminModuleController::desactivate
+
+admin_module_edit:
+    path: /admin/module/{id}/edit
+    controller: App\Controller\AdminModuleController::edit
+
+admin_module_delete:
+    path: /admin/module/{id}/delete
+    controller: App\Controller\AdminModuleController::delete
+    methods: [POST]
+
+admin_creneau_index:
+    path: /admin/creneau
+    controller: App\Controller\AdminCreneauController::index
+
+admin_creneau_new:
+    path: /admin/creneau/new
+    controller: App\Controller\AdminCreneauController::new
+
+admin_creneau_edit:
+    path: /admin/creneau/{id}/edit
+
+admin_creneau_calendrier:
+    path: /admin/creneau/calendrier
+    controller: App\Controller\AdminCreneauController::calendrier
+
+admin_creneau_delete:
+    path: /admin/creneau/{id}/delete
+    controller: App\Controller\AdminCreneauController::delete
+    methods: [POST]
+
+admin_creneau_calendrier_pdf:
+    path: /admin/creneau/calendrier/pdf
+    controller: App\Controller\AdminCreneauController::calendrierPdf
+
+admin_creneau_calendrier_excel:
+    path: /admin/creneau/calendrier/excel
+    controller: App\Controller\AdminCreneauController::calendrierExcel
+
+admin_creneau_calendrier_csv:
+    path: /admin/creneau/calendrier/csv
+    controller: App\Controller\AdminCreneauController::calendrierCsv
+
+admin_creneau_calendrier_pdf_avance:
+    path: /admin/creneau/calendrier/pdf/avance
+    controller: App\Controller\AdminCreneauController::calendrierPdfAvance
+
+admin_creneau_calendrier_excel_avance:
+    path: /admin/creneau/calendrier/excel/avance
+    controller: App\Controller\AdminCreneauController::calendrierExcelAvance
+
+admin_creneau_calendrier_csv_avance:
+    path: /admin/creneau/calendrier/csv/avance
+    controller: App\Controller\AdminCreneauController::calendrierCsvAvance

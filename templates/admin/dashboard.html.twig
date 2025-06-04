@@ -94,17 +94,83 @@
                     </div>
                     <div class="card-body">
                         <div class="list-group list-group-flush">
-                            <a href="{{ path('admin_emploi_du_temps_index') }}" class="list-group-item list-group-item-action">
-                                <i class="fas fa-list"></i> Liste des Emplois
+                            <a href="{{ path('admin_creneau_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-clock"></i> Gérer les Créneaux
                             </a>
-                            <a href="{{ path('admin_emploi_du_temps_calendrier') }}" class="list-group-item list-group-item-action">
+                            <a href="{{ path('admin_creneau_calendrier') }}" class="list-group-item list-group-item-action">
                                 <i class="fas fa-calendar-week"></i> Vue Calendrier
                             </a>
-                            <a href="{{ path('admin_emploi_du_temps_new') }}" class="list-group-item list-group-item-action">
-                                <i class="fas fa-plus"></i> Planifier un Cours
+                            <a href="{{ path('admin_creneau_new') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus"></i> Planifier un Créneau
                             </a>
-                            <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="list-group-item list-group-item-action">
-                                <i class="fas fa-chart-bar"></i> Analyses & Conflits
+                            <a href="{{ path('admin_creneau_index') }}?conflits=1" class="list-group-item list-group-item-action text-warning">
+                                <i class="fas fa-exclamation-triangle"></i> Détecter les Conflits
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nouvelle rangée pour les nouveaux modules -->
+        <div class="row mt-4">
+            <!-- Gestion des Salles -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5><i class="fas fa-door-open"></i> Gestion des Salles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('admin_salle_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list"></i> Liste des Salles
+                            </a>
+                            <a href="{{ path('admin_salle_new') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus"></i> Ajouter une Salle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des Modules/Semestres -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5><i class="fas fa-puzzle-piece"></i> Gestion des Modules</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('admin_module_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list"></i> Liste des Modules
+                            </a>
+                            <a href="{{ path('admin_module_new') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus"></i> Créer un Module
+                            </a>
+                            <a href="{{ path('admin_module_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-calendar-alt"></i> Semestres
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des Absences -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h5><i class="fas fa-user-times"></i> Gestion des Absences</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('admin_absence_index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list"></i> Liste des Absences
+                            </a>
+                            <a href="{{ path('admin_absence_new') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus"></i> Déclarer une Absence
+                            </a>
+                            <a href="{{ path('admin_absence_stats') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-chart-pie"></i> Statistiques
                             </a>
                         </div>
                     </div>
@@ -122,21 +188,21 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
-                                <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-primary btn-lg w-100 mb-2">
+                                <a href="{{ path('admin_creneau_new') }}" class="btn btn-primary btn-lg w-100 mb-2">
                                     <i class="fas fa-plus"></i><br>
-                                    Planifier un Cours
+                                    Planifier un Créneau
                                 </a>
                             </div>
                             <div class="col-md-3">
-                                <a href="{{ path('admin_emploi_du_temps_calendrier') }}" class="btn btn-success btn-lg w-100 mb-2">
+                                <a href="{{ path('admin_creneau_calendrier') }}" class="btn btn-success btn-lg w-100 mb-2">
                                     <i class="fas fa-calendar-week"></i><br>
                                     Vue Calendrier
                                 </a>
                             </div>
                             <div class="col-md-3">
-                                <a href="{{ path('admin_emploi_du_temps_analyse') }}" class="btn btn-info btn-lg w-100 mb-2">
-                                    <i class="fas fa-chart-line"></i><br>
-                                    Analyses
+                                <a href="{{ path('admin_creneau_index') }}?conflits=1" class="btn btn-info btn-lg w-100 mb-2">
+                                    <i class="fas fa-exclamation-triangle"></i><br>
+                                    Détecter les Conflits
                                 </a>
                             </div>
                             <div class="col-md-3">
@@ -148,8 +214,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
+    </div>
 
         <!-- État du Système -->
         <div class="row mt-4">

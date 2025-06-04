@@ -45,7 +45,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Disponibilité::class, mappedBy: 'enseignant')]
     private Collection $disponibilites;
 
-    #[ORM\OneToMany(targetEntity: Absence::class, mappedBy: 'enseignant')]
+    #[ORM\OneToMany(targetEntity: Absence::class, mappedBy: 'utilisateur')]
     private Collection $absences;
 
     #[ORM\OneToMany(targetEntity: Suit::class, mappedBy: 'utilisateur')]
@@ -198,7 +198,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->absences->contains($absence)) {
             $this->absences->add($absence);
-            $absence->setEnseignant($this);
+            $absence->setUtilisateur($this);
         }
         return $this;
     }
@@ -206,8 +206,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeAbsence(Absence $absence): self
     {
         if ($this->absences->removeElement($absence)) {
-            if ($absence->getEnseignant() === $this) {
-                $absence->setEnseignant(null);
+            if ($absence->getUtilisateur() === $this) {
+                $absence->setUtilisateur(null);
             }
         }
         return $this;

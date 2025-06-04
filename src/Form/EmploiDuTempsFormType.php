@@ -86,10 +86,17 @@ class EmploiDuTempsFormType extends AbstractType
                 'choice_label' => 'nomNiveau',
                 'label' => 'Niveau',
                 'placeholder' => 'Sélectionnez un niveau',
+                'attr' => ['class' => 'form-control']
+            ])
+            ->add('module', EntityType::class, [
+                'class' => \App\Entity\Module::class,
+                'choice_label' => function(\App\Entity\Module $module) {
+                    return $module->getNomModule() . ' (S' . $module->getSemestre() . ' - ' . $module->getAnneeAcademique() . ')';
+                },
+                'label' => 'Module/Semestre',
+                'placeholder' => 'Sélectionnez un module',
                 'required' => false,
-                'attr' => [
-                    'class' => 'form-control'
-                ]
+                'attr' => ['class' => 'form-control']
             ]);
     }
 

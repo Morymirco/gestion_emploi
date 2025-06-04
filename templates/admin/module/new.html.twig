@@ -1,0 +1,117 @@
+{# templates/admin/module/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un Module{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-plus"></i> Créer un Nouveau Module</h4>
+                    <p class="mb-0 text-muted">Ajoutez un module pour organiser vos cours par semestre</p>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.nomModule) }}
+                                {{ form_widget(form.nomModule) }}
+                                {{ form_errors(form.nomModule) }}
+                                <small class="form-text text-muted">Nom descriptif du module</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.code) }}
+                                {{ form_widget(form.code) }}
+                                {{ form_errors(form.code) }}
+                                <small class="form-text text-muted">Code unique du module (ex: M001)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.semestre) }}
+                                {{ form_widget(form.semestre) }}
+                                {{ form_errors(form.semestre) }}
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                {{ form_label(form.anneeAcademique) }}
+                                {{ form_widget(form.anneeAcademique) }}
+                                {{ form_errors(form.anneeAcademique) }}
+                                <small class="form-text text-muted">Format: 2024-2025</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.dateDebut) }}
+                                {{ form_widget(form.dateDebut) }}
+                                {{ form_errors(form.dateDebut) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.dateFin) }}
+                                {{ form_widget(form.dateFin) }}
+                                {{ form_errors(form.dateFin) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                        <small class="form-text text-muted">Description optionnelle du module</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form_widget(form.actif) }}
+                            {{ form_label(form.actif, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                        <small class="form-text text-muted">Seuls les modules actifs apparaîtront dans les formulaires</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_module_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Créer le Module
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Conseils -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6><i class="fas fa-lightbulb"></i> Conseils</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Semestre 1 :</strong> Généralement de septembre à janvier</li>
+                        <li><strong>Semestre 2 :</strong> Généralement de février à juin</li>
+                        <li><strong>Code Module :</strong> Utilisez un code court et unique (ex: M001, MATH1, etc.)</li>
+                        <li><strong>Année Académique :</strong> Format recommandé YYYY-YYYY (ex: 2024-2025)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,201 @@
+{# templates/admin/module/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Modules{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-puzzle-piece"></i> Gestion des Modules</h1>
+            
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <!-- Statistiques rapides -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-puzzle-piece"></i> {{ stats.total }}</h5>
+                            <p class="mb-0">Total Modules</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-check-circle"></i> {{ stats.actifs }}</h5>
+                            <p class="mb-0">Modules Actifs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-pause-circle"></i> {{ stats.inactifs }}</h5>
+                            <p class="mb-0">Modules Inactifs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-calendar-alt"></i> {{ "now"|date('Y') }}-{{ ("now"|date('Y')) + 1 }}</h5>
+                            <p class="mb-0">Année Actuelle</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="mb-4">
+                <a href="{{ path('admin_module_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Créer un Module
+                </a>
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour au Tableau de Bord
+                </a>
+            </div>
+
+            <!-- Tableau des modules -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> Liste des Modules ({{ modules|length }} résultats)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Nom du Module</th>
+                                    <th>Semestre</th>
+                                    <th>Année Académique</th>
+                                    <th>Période</th>
+                                    <th>Statut</th>
+                                    <th>Utilisation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for module in modules %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ module.code }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ module.nomModule }}
+                                            {% if module.description %}
+                                                <small class="text-muted d-block">{{ module.description|slice(0, 50) }}{% if module.description|length > 50 %}...{% endif %}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ module.semestre == 1 ? 'primary' : 'info' }}">
+                                                Semestre {{ module.semestre }}
+                                            </span>
+                                        </td>
+                                        <td>{{ module.anneeAcademique }}</td>
+                                        <td>
+                                            <small>
+                                                Du {{ module.dateDebut|date('d/m/Y') }}<br>
+                                                Au {{ module.dateFin|date('d/m/Y') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if module.actif %}
+                                                <span class="badge bg-success">Actif</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactif</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>
+                                                {{ module.cours|length }} cours<br>
+                                                {{ module.emploisDuTemps|length }} emplois
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <form method="post" 
+                                                      action="{{ path('admin_module_activate', {'id': module.id}) }}" 
+                                                      style="display:inline;">
+                                                    <button type="submit" class="btn btn-{{ module.actif ? 'warning' : 'success' }}" 
+                                                            title="{{ module.actif ? 'Désactiver' : 'Activer' }}">
+                                                        <i class="fas fa-{{ module.actif ? 'pause' : 'play' }}"></i>
+                                                    </button>
+                                                </form>
+                                                <a href="{{ path('admin_module_edit', {'id': module.id}) }}" 
+                                                   class="btn btn-warning" title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="post" 
+                                                      action="{{ path('admin_module_delete', {'id': module.id}) }}" 
+                                                      style="display:inline;" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce module ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ module.id) }}">
+                                                    <button type="submit" class="btn btn-danger" title="Supprimer">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <i class="fas fa-puzzle-piece fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Aucun module trouvé.</p>
+                                            <a href="{{ path('admin_module_new') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus"></i> Créer le premier module
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques détaillées -->
+            {% if stats.details|length > 0 %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-chart-bar"></i> Statistiques d'Utilisation</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for detail in stats.details|slice(0, 6) %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-left-primary">
+                                    <div class="card-body py-2">
+                                        <div class="small text-primary">{{ detail.nomModule }}</div>
+                                        <div class="small">
+                                            <strong>{{ detail.nb_cours }}</strong> cours, 
+                                            <strong>{{ detail.nb_emplois }}</strong> emplois
+                                        </div>
+                                        <div class="text-muted">{{ detail.semestre ? 'S' ~ detail.semestre : '' }} {{ detail.anneeAcademique }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

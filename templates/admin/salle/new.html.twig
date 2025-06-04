@@ -1,0 +1,75 @@
+{# templates/admin/salle/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une Salle{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-plus"></i> Ajouter une Nouvelle Salle</h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.nomSalle) }}
+                                {{ form_widget(form.nomSalle) }}
+                                {{ form_errors(form.nomSalle) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.type) }}
+                                {{ form_widget(form.type) }}
+                                {{ form_errors(form.type) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.capacite) }}
+                                {{ form_widget(form.capacite) }}
+                                {{ form_errors(form.capacite) }}
+                                <small class="form-text text-muted">Nombre de places disponibles</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_salle_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Créer la Salle
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Conseils -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6><i class="fas fa-info-circle"></i> Conseils pour la Gestion des Salles</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Nom de la salle :</strong> Utilisez une nomenclature claire (ex: Salle 101, Amphi A, Lab Info...)</li>
+                        <li><strong>Capacité :</strong> Indiquez le nombre exact de places pour optimiser l'attribution</li>
+                        <li><strong>Type :</strong> Sélectionnez le type approprié pour faciliter la recherche</li>
+                        <li><strong>Utilisation :</strong> Une fois créée, la salle pourra être assignée aux emplois du temps</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

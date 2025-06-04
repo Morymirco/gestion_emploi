@@ -1,0 +1,214 @@
+{# templates/admin/creneau/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un Créneau{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-plus"></i> Créer un Nouveau Créneau Horaire</h4>
+                    <p class="mb-0 text-muted">Planifiez une séance de cours, une pause ou une heure creuse</p>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.jourSemaine) }}
+                                {{ form_widget(form.jourSemaine) }}
+                                {{ form_errors(form.jourSemaine) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.heureDebut) }}
+                                {{ form_widget(form.heureDebut) }}
+                                {{ form_errors(form.heureDebut) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.heureFin) }}
+                                {{ form_widget(form.heureFin) }}
+                                {{ form_errors(form.heureFin) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form_label(form.typeCreneau) }}
+                                {{ form_widget(form.typeCreneau) }}
+                                {{ form_errors(form.typeCreneau) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.cours) }}
+                                {{ form_widget(form.cours) }}
+                                {{ form_errors(form.cours) }}
+                                <small class="form-text text-muted">Requis pour les séances de cours</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.module) }}
+                                {{ form_widget(form.module) }}
+                                {{ form_errors(form.module) }}
+                                <small class="form-text text-muted">Module associé au cours</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.salle) }}
+                                {{ form_widget(form.salle) }}
+                                {{ form_errors(form.salle) }}
+                                <small class="form-text text-muted">Salle où se déroule la séance</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.enseignant) }}
+                                {{ form_widget(form.enseignant) }}
+                                {{ form_errors(form.enseignant) }}
+                                <small class="form-text text-muted">Enseignant responsable</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.niveau) }}
+                                {{ form_widget(form.niveau) }}
+                                {{ form_errors(form.niveau) }}
+                                <small class="form-text text-muted">Niveau d'étudiant concerné</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="mb-3">
+                                {{ form_label(form.commentaire) }}
+                                {{ form_widget(form.commentaire) }}
+                                {{ form_errors(form.commentaire) }}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <div class="form-check mt-4">
+                                    {{ form_widget(form.actif) }}
+                                    {{ form_label(form.actif, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_creneau_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Créer le Créneau
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Aide contextuelle -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6><i class="fas fa-lightbulb"></i> Conseils pour la Création</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-chalkboard-teacher"></i> Séances de Cours</h6>
+                            <ul class="small">
+                                <li>Assignez obligatoirement un cours</li>
+                                <li>Sélectionnez une salle adaptée</li>
+                                <li>Définissez l'enseignant responsable</li>
+                                <li>Précisez le niveau d'étudiant</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-coffee"></i> Pauses</h6>
+                            <ul class="small">
+                                <li>Durée recommandée : 15-30 minutes</li>
+                                <li>Cours et enseignant non requis</li>
+                                <li>Planifiez entre les séances</li>
+                                <li>Évitez les conflits d'horaires</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-clock"></i> Heures Creuses</h6>
+                            <ul class="small">
+                                <li>Périodes sans activité</li>
+                                <li>Aucune assignation requise</li>
+                                <li>Utiles pour la planification</li>
+                                <li>Peuvent être désactivées</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Détection de conflits -->
+            <div class="card mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Détection de Conflits</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">Le système vérifie automatiquement les conflits lors de la création :</p>
+                    <ul class="mb-0">
+                        <li><strong>Salle :</strong> Une salle ne peut être occupée qu'une fois par créneau horaire</li>
+                        <li><strong>Enseignant :</strong> Un enseignant ne peut être dans deux endroits en même temps</li>
+                        <li><strong>Niveau :</strong> Un niveau d'étudiant ne peut avoir deux cours simultanément</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Script pour améliorer l'expérience utilisateur
+document.addEventListener('DOMContentLoaded', function() {
+    // Récupérer les éléments du formulaire
+    const typeCreneauSelect = document.querySelector('#creneau_form_typeCreneau');
+    const coursSelect = document.querySelector('#creneau_form_cours');
+    const salleSelect = document.querySelector('#creneau_form_salle');
+    const enseignantSelect = document.querySelector('#creneau_form_enseignant');
+    const niveauSelect = document.querySelector('#creneau_form_niveau');
+
+    // Fonction pour ajuster les champs selon le type de créneau
+    function ajusterChamps() {
+        const typeSelectionne = typeCreneauSelect.value;
+        
+        if (typeSelectionne === 'seance') {
+            // Pour les séances, rendre certains champs plus visibles
+            coursSelect.parentElement.classList.add('border', 'border-primary', 'rounded', 'p-2');
+            salleSelect.parentElement.classList.add('border', 'border-info', 'rounded', 'p-2');
+        } else {
+            // Pour les pauses et heures creuses, retirer l'emphase
+            coursSelect.parentElement.classList.remove('border', 'border-primary', 'rounded', 'p-2');
+            salleSelect.parentElement.classList.remove('border', 'border-info', 'rounded', 'p-2');
+        }
+    }
+
+    // Appliquer les changements quand le type change
+    if (typeCreneauSelect) {
+        typeCreneauSelect.addEventListener('change', ajusterChamps);
+        ajusterChamps(); // Appliquer au chargement
+    }
+});
+</script>
+{% endblock %} 

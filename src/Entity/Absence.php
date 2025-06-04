@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[ORM\Table(name: 'absence')]
 class Absence
 {
     #[ORM\Id]
@@ -12,64 +13,154 @@ class Absence
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'date')]
-    private ?\DateTimeInterface $date = null;
-
-    #[ORM\Column(type: 'time')]
-    private ?\DateTimeInterface $heureDebut = null;
-
-    #[ORM\Column(type: 'time')]
-    private ?\DateTimeInterface $heureFin = null;
-
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'absences')]
-    private ?Utilisateur $enseignant = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $utilisateur = null;
+
+    #[ORM\ManyToOne(targetEntity: Creneau::class, inversedBy: 'absences')]
+    private ?Creneau $creneau = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $dateAbsence = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $type = null; // 'etudiant' ou 'enseignant'
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $motif = null;
+
+    #[ORM\Column]
+    private ?bool $justifiee = false;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $justification = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $dateDeclaration = null;
+
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    private ?Utilisateur $declarePar = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $statut = 'en_attente'; // 'en_attente', 'approuvee', 'rejetee'
+
+    public function __construct()
+    {
+        $this->dateDeclaration = new \DateTime();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getUtilisateur(): ?Utilisateur
     {
-        return $this->date;
+        return $this->utilisateur;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setUtilisateur(?Utilisateur $utilisateur): self
     {
-        $this->date = $date;
+        $this->utilisateur = $utilisateur;
         return $this;
     }
 
-    public function getHeureDebut(): ?\DateTimeInterface
+    public function getCreneau(): ?Creneau
     {
-        return $this->heureDebut;
+        return $this->creneau;
     }
 
-    public function setHeureDebut(\DateTimeInterface $heureDebut): self
+    public function setCreneau(?Creneau $creneau): self
     {
-        $this->heureDebut = $heureDebut;
+        $this->creneau = $creneau;
         return $this;
     }
 
-    public function getHeureFin(): ?\DateTimeInterface
+    public function getDateAbsence(): ?\DateTimeInterface
     {
-        return $this->heureFin;
+        return $this->dateAbsence;
     }
 
-    public function setHeureFin(\DateTimeInterface $heureFin): self
+    public function setDateAbsence(\DateTimeInterface $dateAbsence): self
     {
-        $this->heureFin = $heureFin;
+        $this->dateAbsence = $dateAbsence;
         return $this;
     }
 
-    public function getEnseignant(): ?Utilisateur
+    public function getType(): ?string
     {
-        return $this->enseignant;
+        return $this->type;
     }
 
-    public function setEnseignant(?Utilisateur $enseignant): self
+    public function setType(string $type): self
     {
-        $this->enseignant = $enseignant;
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getMotif(): ?string
+    {
+        return $this->motif;
+    }
+
+    public function setMotif(?string $motif): self
+    {
+        $this->motif = $motif;
+        return $this;
+    }
+
+    public function isJustifiee(): ?bool
+    {
+        return $this->justifiee;
+    }
+
+    public function setJustifiee(bool $justifiee): self
+    {
+        $this->justifiee = $justifiee;
+        return $this;
+    }
+
+    public function getJustification(): ?string
+    {
+        return $this->justification;
+    }
+
+    public function setJustification(?string $justification): self
+    {
+        $this->justification = $justification;
+        return $this;
+    }
+
+    public function getDateDeclaration(): ?\DateTimeInterface
+    {
+        return $this->dateDeclaration;
+    }
+
+    public function setDateDeclaration(\DateTimeInterface $dateDeclaration): self
+    {
+        $this->dateDeclaration = $dateDeclaration;
+        return $this;
+    }
+
+    public function getDeclarePar(): ?Utilisateur
+    {
+        return $this->declarePar;
+    }
+
+    public function setDeclarePar(?Utilisateur $declarePar): self
+    {
+        $this->declarePar = $declarePar;
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): self
+    {
+        $this->statut = $statut;
         return $this;
     }
 }

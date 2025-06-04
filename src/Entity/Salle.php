@@ -22,7 +22,7 @@ class Salle
     private ?int $capacite = null;
 
     #[ORM\Column(type: 'string', enumType: SalleType::class)]
-    private ?string $type = null;
+    private ?SalleType $type = null;
 
     #[ORM\OneToMany(targetEntity: EmploiDuTemps::class, mappedBy: 'salle')]
     private Collection $emploiDuTemps;
@@ -63,12 +63,12 @@ class Salle
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?SalleType
     {
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(SalleType $type): self
     {
         $this->type = $type;
         return $this;

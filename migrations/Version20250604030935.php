@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250604023116 extends AbstractMigration
+final class Version20250604030935 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,10 +21,10 @@ final class Version20250604023116 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            CREATE TABLE absence (id INT AUTO_INCREMENT NOT NULL, enseignant_id INT DEFAULT NULL, date DATE NOT NULL, heure_debut TIME NOT NULL, heure_fin TIME NOT NULL, INDEX IDX_765AE0C9E455FCC0 (enseignant_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE absence (id INT AUTO_INCREMENT NOT NULL, utilisateur_id INT NOT NULL, emploi_du_temps_id INT NOT NULL, declare_par_id INT DEFAULT NULL, date_absence DATETIME NOT NULL, type VARCHAR(20) NOT NULL, motif LONGTEXT DEFAULT NULL, justifiee TINYINT(1) NOT NULL, justification LONGTEXT DEFAULT NULL, date_declaration DATETIME NOT NULL, statut VARCHAR(20) NOT NULL, INDEX IDX_765AE0C9FB88E14F (utilisateur_id), INDEX IDX_765AE0C9C13CD51E (emploi_du_temps_id), INDEX IDX_765AE0C98B43E2A (declare_par_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE cours (id INT AUTO_INCREMENT NOT NULL, enseignant_id INT DEFAULT NULL, département_id INT DEFAULT NULL, niveau_id INT DEFAULT NULL, nom_cours VARCHAR(255) NOT NULL, description LONGTEXT DEFAULT NULL, INDEX IDX_FDCA8C9CE455FCC0 (enseignant_id), INDEX IDX_FDCA8C9CAE548A03 (département_id), INDEX IDX_FDCA8C9CB3E9C81 (niveau_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE cours (id INT AUTO_INCREMENT NOT NULL, enseignant_id INT DEFAULT NULL, département_id INT DEFAULT NULL, niveau_id INT DEFAULT NULL, module_id INT DEFAULT NULL, nom_cours VARCHAR(255) NOT NULL, description LONGTEXT DEFAULT NULL, INDEX IDX_FDCA8C9CE455FCC0 (enseignant_id), INDEX IDX_FDCA8C9CAE548A03 (département_id), INDEX IDX_FDCA8C9CB3E9C81 (niveau_id), INDEX IDX_FDCA8C9CAFC2B591 (module_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE disponibilité (id INT AUTO_INCREMENT NOT NULL, enseignant_id INT DEFAULT NULL, salle_id INT DEFAULT NULL, date DATE NOT NULL, heure_debut TIME NOT NULL, heure_fin TIME NOT NULL, INDEX IDX_2EA86839E455FCC0 (enseignant_id), INDEX IDX_2EA86839DC304035 (salle_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -33,7 +33,10 @@ final class Version20250604023116 extends AbstractMigration
             CREATE TABLE département (id INT AUTO_INCREMENT NOT NULL, nom_département VARCHAR(255) NOT NULL, code VARCHAR(10) NOT NULL, UNIQUE INDEX UNIQ_40B53A73CD73572D (nom_département), UNIQUE INDEX UNIQ_40B53A7377153098 (code), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE emploi_du_temps (id INT AUTO_INCREMENT NOT NULL, cours_id INT DEFAULT NULL, salle_id INT DEFAULT NULL, département_id INT DEFAULT NULL, niveau_id INT DEFAULT NULL, date DATE NOT NULL, heure_debut TIME NOT NULL, heure_fin TIME NOT NULL, duree VARCHAR(8) NOT NULL, INDEX IDX_F86B32C17ECF78B0 (cours_id), INDEX IDX_F86B32C1DC304035 (salle_id), INDEX IDX_F86B32C1AE548A03 (département_id), INDEX IDX_F86B32C1B3E9C81 (niveau_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE emploi_du_temps (id INT AUTO_INCREMENT NOT NULL, cours_id INT DEFAULT NULL, salle_id INT DEFAULT NULL, département_id INT DEFAULT NULL, niveau_id INT DEFAULT NULL, module_id INT DEFAULT NULL, date DATE NOT NULL, heure_debut TIME NOT NULL, heure_fin TIME NOT NULL, duree VARCHAR(8) NOT NULL, INDEX IDX_F86B32C17ECF78B0 (cours_id), INDEX IDX_F86B32C1DC304035 (salle_id), INDEX IDX_F86B32C1AE548A03 (département_id), INDEX IDX_F86B32C1B3E9C81 (niveau_id), INDEX IDX_F86B32C1AFC2B591 (module_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE module (id INT AUTO_INCREMENT NOT NULL, nom_module VARCHAR(100) NOT NULL, code VARCHAR(20) NOT NULL, date_debut DATE NOT NULL, date_fin DATE NOT NULL, annee_academique VARCHAR(10) NOT NULL, semestre INT NOT NULL, description LONGTEXT DEFAULT NULL, actif TINYINT(1) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE niveau (id INT AUTO_INCREMENT NOT NULL, nom_niveau VARCHAR(50) NOT NULL, code VARCHAR(10) NOT NULL, UNIQUE INDEX UNIQ_4BDFF36BCB106C3C (nom_niveau), UNIQUE INDEX UNIQ_4BDFF36B77153098 (code), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -51,7 +54,13 @@ final class Version20250604023116 extends AbstractMigration
             CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL, available_at DATETIME NOT NULL, delivered_at DATETIME DEFAULT NULL, INDEX IDX_75EA56E0FB7336F0 (queue_name), INDEX IDX_75EA56E0E3BD61CE (available_at), INDEX IDX_75EA56E016BA31DB (delivered_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE absence ADD CONSTRAINT FK_765AE0C9E455FCC0 FOREIGN KEY (enseignant_id) REFERENCES utilisateur (id)
+            ALTER TABLE absence ADD CONSTRAINT FK_765AE0C9FB88E14F FOREIGN KEY (utilisateur_id) REFERENCES utilisateur (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE absence ADD CONSTRAINT FK_765AE0C9C13CD51E FOREIGN KEY (emploi_du_temps_id) REFERENCES emploi_du_temps (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE absence ADD CONSTRAINT FK_765AE0C98B43E2A FOREIGN KEY (declare_par_id) REFERENCES utilisateur (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE cours ADD CONSTRAINT FK_FDCA8C9CE455FCC0 FOREIGN KEY (enseignant_id) REFERENCES utilisateur (id)
@@ -61,6 +70,9 @@ final class Version20250604023116 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE cours ADD CONSTRAINT FK_FDCA8C9CB3E9C81 FOREIGN KEY (niveau_id) REFERENCES niveau (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE cours ADD CONSTRAINT FK_FDCA8C9CAFC2B591 FOREIGN KEY (module_id) REFERENCES module (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE disponibilité ADD CONSTRAINT FK_2EA86839E455FCC0 FOREIGN KEY (enseignant_id) REFERENCES utilisateur (id)
@@ -81,6 +93,9 @@ final class Version20250604023116 extends AbstractMigration
             ALTER TABLE emploi_du_temps ADD CONSTRAINT FK_F86B32C1B3E9C81 FOREIGN KEY (niveau_id) REFERENCES niveau (id)
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE emploi_du_temps ADD CONSTRAINT FK_F86B32C1AFC2B591 FOREIGN KEY (module_id) REFERENCES module (id)
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE suit ADD CONSTRAINT FK_E9A31F1EFB88E14F FOREIGN KEY (utilisateur_id) REFERENCES utilisateur (id)
         SQL);
         $this->addSql(<<<'SQL'
@@ -98,7 +113,13 @@ final class Version20250604023116 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE absence DROP FOREIGN KEY FK_765AE0C9E455FCC0
+            ALTER TABLE absence DROP FOREIGN KEY FK_765AE0C9FB88E14F
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE absence DROP FOREIGN KEY FK_765AE0C9C13CD51E
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE absence DROP FOREIGN KEY FK_765AE0C98B43E2A
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE cours DROP FOREIGN KEY FK_FDCA8C9CE455FCC0
@@ -108,6 +129,9 @@ final class Version20250604023116 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE cours DROP FOREIGN KEY FK_FDCA8C9CB3E9C81
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE cours DROP FOREIGN KEY FK_FDCA8C9CAFC2B591
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE disponibilité DROP FOREIGN KEY FK_2EA86839E455FCC0
@@ -126,6 +150,9 @@ final class Version20250604023116 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE emploi_du_temps DROP FOREIGN KEY FK_F86B32C1B3E9C81
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE emploi_du_temps DROP FOREIGN KEY FK_F86B32C1AFC2B591
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE suit DROP FOREIGN KEY FK_E9A31F1EFB88E14F
@@ -153,6 +180,9 @@ final class Version20250604023116 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE emploi_du_temps
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE module
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE niveau

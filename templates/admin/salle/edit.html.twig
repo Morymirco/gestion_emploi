@@ -1,0 +1,123 @@
+{# templates/admin/salle/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la Salle - {{ salle.nomSalle }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> Modifier la Salle</h4>
+                    <p class="mb-0 text-muted">{{ salle.nomSalle }} - {{ salle.capacite }} places</p>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.nomSalle) }}
+                                {{ form_widget(form.nomSalle) }}
+                                {{ form_errors(form.nomSalle) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.type) }}
+                                {{ form_widget(form.type) }}
+                                {{ form_errors(form.type) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.capacite) }}
+                                {{ form_widget(form.capacite) }}
+                                {{ form_errors(form.capacite) }}
+                                <small class="form-text text-muted">Nombre de places disponibles</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_salle_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                        <div>
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-save"></i> Enregistrer les Modifications
+                            </button>
+                            <form method="post" 
+                                  action="{{ path('admin_salle_delete', {'id': salle.id}) }}" 
+                                  style="display:inline;" 
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette salle ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ salle.id) }}">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Informations sur l'utilisation -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6><i class="fas fa-info-circle"></i> Utilisation de la Salle</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Type :</strong> 
+                        {% if salle.type.value == 'salle' %}
+                            <span class="badge bg-primary">Salle de Cours</span>
+                        {% elseif salle.type.value == 'tp' %}
+                            <span class="badge bg-success">Salle de TP</span>
+                        {% elseif salle.type.value == 'amphi' %}
+                            <span class="badge bg-info">Amphithéâtre</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Capacité :</strong> {{ salle.capacite }} places</p>
+                    <p><strong>Utilisation :</strong> {{ salle.emploiDuTemps|length }} emploi(s) du temps programmé(s)</p>
+                    
+                    {% if salle.emploiDuTemps|length > 0 %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Attention :</strong> Cette salle est utilisée dans {{ salle.emploiDuTemps|length }} emploi(s) du temps. 
+                            Toute modification pourrait affecter la planification existante.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-bolt"></i> Actions Rapides</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{{ path('admin_salle_disponibilite', {'id': salle.id}) }}" class="btn btn-info w-100">
+                                <i class="fas fa-calendar-check"></i><br>
+                                Voir les Disponibilités
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-success w-100">
+                                <i class="fas fa-plus"></i><br>
+                                Planifier un Cours
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

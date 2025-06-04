@@ -1,0 +1,185 @@
+{# templates/admin/module/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Module - {{ module.nomModule }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> Modifier le Module</h4>
+                    <p class="mb-0 text-muted">{{ module.nomModule }} - {{ module.code }} ({{ module.anneeAcademique }})</p>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.nomModule) }}
+                                {{ form_widget(form.nomModule) }}
+                                {{ form_errors(form.nomModule) }}
+                                <small class="form-text text-muted">Nom descriptif du module</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.code) }}
+                                {{ form_widget(form.code) }}
+                                {{ form_errors(form.code) }}
+                                <small class="form-text text-muted">Code unique du module (ex: M001)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form_label(form.semestre) }}
+                                {{ form_widget(form.semestre) }}
+                                {{ form_errors(form.semestre) }}
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                {{ form_label(form.anneeAcademique) }}
+                                {{ form_widget(form.anneeAcademique) }}
+                                {{ form_errors(form.anneeAcademique) }}
+                                <small class="form-text text-muted">Format: 2024-2025</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.dateDebut) }}
+                                {{ form_widget(form.dateDebut) }}
+                                {{ form_errors(form.dateDebut) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.dateFin) }}
+                                {{ form_widget(form.dateFin) }}
+                                {{ form_errors(form.dateFin) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                        <small class="form-text text-muted">Description optionnelle du module</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form_widget(form.actif) }}
+                            {{ form_label(form.actif, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                        <small class="form-text text-muted">Seuls les modules actifs apparaîtront dans les formulaires</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_module_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                        <div>
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-save"></i> Enregistrer les Modifications
+                            </button>
+                            <form method="post" 
+                                  action="{{ path('admin_module_delete', {'id': module.id}) }}" 
+                                  style="display:inline;" 
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce module ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ module.id) }}">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Informations sur l'utilisation -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6><i class="fas fa-info-circle"></i> Utilisation du Module</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Période :</strong> 
+                                Du {{ module.dateDebut|date('d/m/Y') }} au {{ module.dateFin|date('d/m/Y') }}
+                            </p>
+                            <p><strong>Semestre :</strong> 
+                                <span class="badge bg-{{ module.semestre == 1 ? 'primary' : 'info' }}">
+                                    Semestre {{ module.semestre }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Statut :</strong> 
+                                {% if module.actif %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactif</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Utilisation :</strong> 
+                                {{ module.cours|length }} cours, {{ module.emploisDuTemps|length }} emploi(s) du temps
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if module.cours|length > 0 or module.emploisDuTemps|length > 0 %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Attention :</strong> Ce module est utilisé dans {{ module.cours|length }} cours et {{ module.emploisDuTemps|length }} emploi(s) du temps. 
+                            Toute modification pourrait affecter la planification existante.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-bolt"></i> Actions Rapides</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form method="post" action="{{ path('admin_module_activate', {'id': module.id}) }}">
+                                <button type="submit" class="btn btn-{{ module.actif ? 'warning' : 'success' }} w-100">
+                                    <i class="fas fa-{{ module.actif ? 'pause' : 'play' }}"></i><br>
+                                    {{ module.actif ? 'Désactiver' : 'Activer' }} le Module
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ path('admin_cours_new') }}" class="btn btn-info w-100">
+                                <i class="fas fa-book"></i><br>
+                                Créer un Cours
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ path('admin_emploi_du_temps_new') }}" class="btn btn-success w-100">
+                                <i class="fas fa-calendar-plus"></i><br>
+                                Planifier un Emploi
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

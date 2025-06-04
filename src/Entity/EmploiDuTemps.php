@@ -37,6 +37,9 @@ class EmploiDuTemps
     #[ORM\ManyToOne(targetEntity: Niveau::class, inversedBy: 'emploiDuTemps')]
     private ?Niveau $niveau = null;
 
+    #[ORM\ManyToOne(targetEntity: Module::class, inversedBy: 'emploisDuTemps')]
+    private ?Module $module = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,12 +78,12 @@ class EmploiDuTemps
         return $this;
     }
 
-    public function getDurée(): ?string
+    public function getDuree(): ?string
     {
         return $this->duree;
     }
 
-    public function setDurée(string $duree): self
+    public function setDuree(string $duree): self
     {
         $this->duree = $duree;
         return $this;
@@ -127,6 +130,17 @@ class EmploiDuTemps
     public function setNiveau(?Niveau $niveau): self
     {
         $this->niveau = $niveau;
+        return $this;
+    }
+
+    public function getModule(): ?Module
+    {
+        return $this->module;
+    }
+
+    public function setModule(?Module $module): self
+    {
+        $this->module = $module;
         return $this;
     }
 }

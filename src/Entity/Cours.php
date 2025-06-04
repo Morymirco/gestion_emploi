@@ -30,6 +30,9 @@ class Cours
     #[ORM\ManyToOne(targetEntity: Niveau::class, inversedBy: 'cours')]
     private ?Niveau $niveau = null;
 
+    #[ORM\ManyToOne(targetEntity: Module::class, inversedBy: 'cours')]
+    private ?Module $module = null;
+
     #[ORM\OneToMany(targetEntity: EmploiDuTemps::class, mappedBy: 'cours')]
     private Collection $emploiDuTemps;
 
@@ -99,6 +102,17 @@ class Cours
     public function setNiveau(?Niveau $niveau): self
     {
         $this->niveau = $niveau;
+        return $this;
+    }
+
+    public function getModule(): ?Module
+    {
+        return $this->module;
+    }
+
+    public function setModule(?Module $module): self
+    {
+        $this->module = $module;
         return $this;
     }
 

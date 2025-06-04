@@ -219,7 +219,7 @@ class AdminEmploiDuTempsController extends AbstractController
             $fin = $emploiDuTemps->getHeureFin();
             if ($debut && $fin) {
                 $duree = $debut->diff($fin);
-                $emploiDuTemps->setDurée($duree->format('%H:%I'));
+                $emploiDuTemps->setDuree($duree->format('%H:%I'));
             }
 
             $this->entityManager->persist($emploiDuTemps);
@@ -249,7 +249,7 @@ class AdminEmploiDuTempsController extends AbstractController
             $fin = $emploiDuTemps->getHeureFin();
             if ($debut && $fin) {
                 $duree = $debut->diff($fin);
-                $emploiDuTemps->setDurée($duree->format('%H:%I'));
+                $emploiDuTemps->setDuree($duree->format('%H:%I'));
             }
 
             $this->entityManager->flush();

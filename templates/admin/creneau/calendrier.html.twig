@@ -1,0 +1,386 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vue Calendrier - Emploi du Temps{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-calendar-week"></i> Vue Calendrier - Emploi du Temps</h1>
+            
+            <!-- En-tête officiel -->
+            <div class="card mb-4" style="border: 3px solid #000;">
+                <div class="card-header bg-dark text-white text-center" style="border-bottom: 2px solid #000;">
+                    <h3 class="mb-2" style="font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                        <i class="fas fa-university"></i> CENTRE DE FORMATION UGANC
+                    </h3>
+                    <h4 class="mb-1" style="font-weight: bold;">EMPLOI DU TEMPS PROVISOIRE</h4>
+                    <p class="mb-0" style="font-size: 0.9rem;">
+                        SEMESTRE {{ ("now"|date('n') <= 6) ? '2' : '1' }} - ANNÉE ACADÉMIQUE {{ "now"|date('Y') }}-{{ ("now"|date('Y') + 1) }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="mb-4">
+                <a href="{{ path('admin_creneau_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajouter un Créneau
+                </a>
+                <a href="{{ path('admin_creneau_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Vue Liste
+                </a>
+                
+                <!-- Menu Export PDF -->
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-file-pdf"></i> Exporter PDF
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf') }}" target="_blank">
+                            <i class="fas fa-download"></i> Export Standard (Paysage)
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?orientation=portrait" target="_blank">
+                            <i class="fas fa-portrait"></i> Format Portrait
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Export par Jour</h6></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?jour=lundi" target="_blank">
+                            📅 Lundi seulement
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?jour=mardi" target="_blank">
+                            📅 Mardi seulement
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?jour=mercredi" target="_blank">
+                            📅 Mercredi seulement
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?jour=jeudi" target="_blank">
+                            📅 Jeudi seulement
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?jour=vendredi" target="_blank">
+                            📅 Vendredi seulement
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?jour=samedi" target="_blank">
+                            📅 Samedi seulement
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ path('admin_creneau_calendrier_pdf_avance') }}?stats=0&legend=0" target="_blank">
+                            <i class="fas fa-compress"></i> Version Minimaliste
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour au Dashboard
+                </a>
+            </div>
+
+            <!-- Légende -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle"></i> Légende</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <span class="badge bg-primary me-2">■</span> Séance de Cours
+                        </div>
+                        <div class="col-md-4">
+                            <span class="badge bg-warning me-2">■</span> Pause
+                        </div>
+                        <div class="col-md-4">
+                            <span class="badge bg-secondary me-2">■</span> Heure Creuse
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille de l'emploi du temps officiel -->
+            <div class="card" style="border: 2px solid #000;">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0" style="font-weight: bold; text-transform: uppercase;">
+                        <i class="fas fa-calendar"></i> Emploi du Temps Hebdomadaire
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0" style="font-size: 0.8rem; border: 2px solid #000;">
+                            <thead style="background-color: #000; color: white;">
+                                <tr>
+                                    <th style="border: 2px solid #000; text-align: center; font-weight: bold; text-transform: uppercase; padding: 12px;">
+                                        HORAIRE
+                                    </th>
+                                    {% for jour in jours %}
+                                        <th style="border: 2px solid #000; text-align: center; font-weight: bold; text-transform: uppercase; width: 160px; padding: 12px;">
+                                            {{ jour|upper }}
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for index, heure in heures %}
+                                    {% if index < (heures|length - 1) %}
+                                        {% set heureActuelle = heure %}
+                                        {% set heureSuivante = heures[index + 1] %}
+                                        <tr>
+                                            <td style="background-color: #e9ecef; border: 1px solid #000; font-weight: bold; text-align: center; vertical-align: middle; width: 100px; padding: 8px;">
+                                                {{ heureActuelle }} - {{ heureSuivante }}
+                                            </td>
+                                            {% for jour in jours %}
+                                                {# Chercher un créneau qui commence à cette heure exacte #}
+                                                {% set creneauTrouve = null %}
+                                                {% set rowspan = 1 %}
+                                                
+                                                {% for creneau in creneauxParJour[jour] %}
+                                                    {% set heureDebut = creneau.heureDebut|date('H:i') %}
+                                                    {% if heureActuelle == heureDebut and creneauTrouve is null %}
+                                                        {% set creneauTrouve = creneau %}
+                                                        
+                                                        {# Calculer le nombre d'heures du créneau #}
+                                                        {% set debutHeure = creneau.heureDebut|date('H')|number_format(0, '', '') %}
+                                                        {% set finHeure = creneau.heureFin|date('H')|number_format(0, '', '') %}
+                                                        {% set rowspan = finHeure - debutHeure %}
+                                                        {% if rowspan < 1 %}{% set rowspan = 1 %}{% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {# Vérifier si cette cellule fait partie d'un créneau qui a commencé plus tôt #}
+                                                {% set skipCell = false %}
+                                                {% for creneau in creneauxParJour[jour] %}
+                                                    {% set debutHeure = creneau.heureDebut|date('H')|number_format(0, '', '') %}
+                                                    {% set finHeure = creneau.heureFin|date('H')|number_format(0, '', '') %}
+                                                    {% set heureActuelleNum = heureActuelle|slice(0, 2)|number_format(0, '', '') %}
+                                                    
+                                                    {% if heureActuelleNum > debutHeure and heureActuelleNum < finHeure %}
+                                                        {% set skipCell = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% if not skipCell %}
+                                                    <td style="border: 1px solid #000; padding: 3px; vertical-align: top; height: {{ rowspan * 70 }}px; position: relative;" {% if rowspan > 1 %}rowspan="{{ rowspan }}"{% endif %}>
+                                                        {% if creneauTrouve %}
+                                                            {% set creneau = creneauTrouve %}
+                                                            {% set heureDebut = creneau.heureDebut|date('H:i') %}
+                                                            {% set heureFin = creneau.heureFin|date('H:i') %}
+                                                            
+                                                            {# Déterminer le style selon le type de cours #}
+                                                            {% set bgColor = '#ffffff' %}
+                                                            {% set textColor = '#000000' %}
+                                                            {% if creneau.cours %}
+                                                                {% set coursNom = creneau.cours.nomCours|lower %}
+                                                                {% if 'projet' in coursNom %}
+                                                                    {% set bgColor = '#e3f2fd' %}
+                                                                {% elseif 'stage' in coursNom %}
+                                                                    {% set bgColor = '#f3e5f5' %}
+                                                                {% elseif 'framework' in coursNom or 'django' in coursNom %}
+                                                                    {% set bgColor = '#ffeb3b' %}
+                                                                {% elseif 'gestion' in coursNom %}
+                                                                    {% set bgColor = '#e0e0e0' %}
+                                                                {% elseif 'développement' in coursNom or 'developpement' in coursNom %}
+                                                                    {% set bgColor = '#e8f5e8' %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            
+                                                            {% if creneau.typeCreneau.value == 'seance' %}
+                                                                <div style="background-color: {{ bgColor }}; color: {{ textColor }}; height: 100%; padding: 8px; font-size: 0.75rem; line-height: 1.2; overflow: hidden;">
+                                                                    <div style="font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.8rem;">
+                                                                        {{ creneau.cours ? creneau.cours.nomCours : 'COURS NON ASSIGNÉ' }}
+                                                                    </div>
+                                                                    {% if creneau.enseignant %}
+                                                                        <div style="margin-bottom: 3px; font-weight: bold;">
+                                                                            <i class="fas fa-user"></i> {{ creneau.enseignant.prenom }} {{ creneau.enseignant.nom }}
+                                                                        </div>
+                                                                        <div style="margin-bottom: 3px; font-size: 0.65rem; color: #666;">
+                                                                            📧 {{ creneau.enseignant.email|slice(0, 25) }}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    {% if creneau.salle %}
+                                                                        <div style="margin-bottom: 3px; font-style: italic;">
+                                                                            <i class="fas fa-door-open"></i> Salle {{ creneau.salle.nomSalle }}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    {% if creneau.niveau %}
+                                                                        <div style="margin-bottom: 3px; font-size: 0.7rem;">
+                                                                            <i class="fas fa-graduation-cap"></i> {{ creneau.niveau.nomNiveau }}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    <div style="margin-top: 8px; text-align: center; font-size: 0.65rem; font-weight: bold; border-top: 1px solid #ccc; padding-top: 3px;">
+                                                                        {{ heureDebut }} - {{ heureFin }}
+                                                                    </div>
+                                                                </div>
+                                                            {% elseif creneau.typeCreneau.value == 'pause' %}
+                                                                <div style="background: repeating-linear-gradient(45deg, #f8f9fa, #f8f9fa 3px, #e9ecef 3px, #e9ecef 6px); height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
+                                                                    <i class="fas fa-coffee"></i> PAUSE
+                                                                </div>
+                                                            {% else %}
+                                                                <div style="background: repeating-linear-gradient(45deg, #f8f9fa, #f8f9fa 3px, #e9ecef 3px, #e9ecef 6px); height: 100%; display: flex; align-items: center; justify-content: center;">
+                                                                    <span style="color: #666; font-size: 0.7rem;">Heure Creuse</span>
+                                                                </div>
+                                                            {% endif %}
+                                                            
+                                                            <div class="position-absolute top-0 end-0 p-1">
+                                                                <a href="{{ path('admin_creneau_edit', {'id': creneau.id}) }}" 
+                                                                   class="btn btn-sm btn-outline-dark" 
+                                                                   style="font-size: 0.6rem; padding: 2px 6px; opacity: 0.7;"
+                                                                   title="Modifier">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            </div>
+                                                        {% else %}
+                                                            <div style="background: repeating-linear-gradient(45deg, #f8f9fa, #f8f9fa 3px, #e9ecef 3px, #e9ecef 6px); height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                                                                 onclick="window.location='{{ path('admin_creneau_new') }}?jour={{ jour }}&heure={{ heureActuelle }}'">
+                                                                <i class="fas fa-plus text-muted"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pied de page avec informations -->
+            <div class="card mt-4" style="border: 2px solid #000;">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <strong style="font-style: italic;">
+                            ( Valable à partir du {{ "now"|date('d') }} {{ "now"|date('F')|slice(0,3) }} {{ "now"|date('Y') }} )
+                        </strong>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <strong>Le Chef de Département</strong><br><br>
+                            <span style="text-decoration: underline; font-weight: bold;">Chef Académique UGANC</span>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <strong>Document généré automatiquement</strong><br>
+                            <em>Système de Gestion d'Emploi du Temps</em><br>
+                            <small>Centre de Formation UGANC - {{ "now"|date('Y') }}</small>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <strong>Service Académique</strong><br><br>
+                            <span style="text-decoration: underline; font-weight: bold;">Coordinateur Pédagogique</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques rapides -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <h5>
+                                {% set totalSeances = 0 %}
+                                {% for jour, creneaux in creneauxParJour %}
+                                    {% for creneau in creneaux %}
+                                        {% if creneau.typeCreneau.value == 'seance' %}
+                                            {% set totalSeances = totalSeances + 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {{ totalSeances }}
+                            </h5>
+                            <p class="mb-0">Séances de Cours</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body text-center">
+                            <h5>
+                                {% set totalPauses = 0 %}
+                                {% for jour, creneaux in creneauxParJour %}
+                                    {% for creneau in creneaux %}
+                                        {% if creneau.typeCreneau.value == 'pause' %}
+                                            {% set totalPauses = totalPauses + 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {{ totalPauses }}
+                            </h5>
+                            <p class="mb-0">Pauses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h5>
+                                {% set sallesUtilisees = [] %}
+                                {% for jour, creneaux in creneauxParJour %}
+                                    {% for creneau in creneaux %}
+                                        {% if creneau.salle and creneau.salle.id not in sallesUtilisees %}
+                                            {% set sallesUtilisees = sallesUtilisees|merge([creneau.salle.id]) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {{ sallesUtilisees|length }}
+                            </h5>
+                            <p class="mb-0">Salles Utilisées</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h5>
+                                {% set enseignantsActifs = [] %}
+                                {% for jour, creneaux in creneauxParJour %}
+                                    {% for creneau in creneaux %}
+                                        {% if creneau.enseignant and creneau.enseignant.id not in enseignantsActifs %}
+                                            {% set enseignantsActifs = enseignantsActifs|merge([creneau.enseignant.id]) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {{ enseignantsActifs|length }}
+                            </h5>
+                            <p class="mb-0">Enseignants Actifs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Styles personnalisés pour l'emploi du temps */
+.table td {
+    border: 1px solid #dee2e6;
+}
+
+.table th {
+    border: 1px solid #495057;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.7rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.25rem;
+    }
+}
+</style>
+
+<script>
+// Script pour améliorer l'interactivité
+document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter des tooltips pour les créneaux
+    const creneaux = document.querySelectorAll('[title]');
+    creneaux.forEach(function(creneau) {
+        // Initialiser les tooltips Bootstrap si disponible
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            new bootstrap.Tooltip(creneau);
+        }
+    });
+});
+</script>
+{% endblock %}

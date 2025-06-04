@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Emploi du Temps - {{ "now"|date('d/m/Y') }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 8px;
+            font-size: 7px;
+            line-height: 1.0;
+        }
+        
+        .header-officiel {
+            text-align: center;
+            margin-bottom: 10px;
+            border: 2px solid #000;
+            padding: 4px;
+            background-color: #f8f9fa;
+        }
+        
+        .header-officiel h1 {
+            margin: 0;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .emploi-temps-officiel {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            font-size: 6px;
+            table-layout: fixed;
+        }
+        
+        .emploi-temps-officiel th {
+            background-color: #000;
+            color: white;
+            padding: 4px 2px;
+            text-align: center;
+            border: 1px solid #000;
+            font-weight: bold;
+            font-size: 7px;
+            text-transform: uppercase;
+            height: 25px;
+        }
+        
+        .emploi-temps-officiel td {
+            border: 1px solid #000;
+            padding: 1px;
+            text-align: center;
+            vertical-align: top;
+            min-height: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .horaire-col {
+            background-color: #e9ecef;
+            font-weight: bold;
+            font-size: 6px;
+            width: 60px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .cellule-vide {
+            background-image: repeating-linear-gradient(
+                45deg,
+                #f8f9fa,
+                #f8f9fa 2px,
+                #e9ecef 2px,
+                #e9ecef 4px
+            );
+            min-height: 28px;
+        }
+        
+        .creneau-normal {
+            background-color: white;
+            padding: 2px;
+            font-size: 5px;
+            line-height: 1.1;
+            height: 100%;
+            text-align: left;
+        }
+        
+        .creneau-special {
+            background-color: #ffeb3b;
+            padding: 3px;
+            font-size: 7px;
+            line-height: 1.2;
+            height: 100%;
+            text-align: left;
+        }
+        
+        .creneau-gestion {
+            background-color: #e0e0e0;
+            padding: 3px;
+            font-size: 7px;
+            line-height: 1.2;
+            height: 100%;
+            text-align: left;
+        }
+        
+        .cours-titre {
+            font-weight: bold;
+            font-size: 6px;
+            margin-bottom: 1px;
+            text-transform: uppercase;
+        }
+        
+        .enseignant-info {
+            font-size: 5px;
+            margin-bottom: 1px;
+            line-height: 1.0;
+        }
+        
+        .salle-info {
+            font-size: 5px;
+            font-style: italic;
+            margin-bottom: 1px;
+        }
+        
+        .contact-info {
+            font-size: 4px;
+            color: #666;
+        }
+        
+        .pied-page {
+            margin-top: 10px;
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 6px;
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        
+        .validite {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        @page {
+            margin: 0.5cm;
+            size: A4 landscape;
+        }
+        
+        /* Styles pour différents types de cours */
+        .type-projet { background-color: #e3f2fd; }
+        .type-stage { background-color: #f3e5f5; }
+        .type-framework { background-color: #ffeb3b; }
+        .type-gestion { background-color: #e0e0e0; }
+        .type-developpement { background-color: #e8f5e8; }
+    </style>
+</head>
+<body>
+    <!-- En-tête officiel -->
+    <div class="header-officiel">
+        <h1>CENTRE DE FORMATION UGANC : EMPLOI DU TEMPS PROVISOIRE</h1>
+        {% if singleJour is defined and singleJour %}
+            <p style="margin: 5px 0; font-size: 11px; font-weight: bold;">{{ jours[0]|upper }} - ANNÉE ACADÉMIQUE {{ "now"|date('Y') }}-{{ ("now"|date('Y') + 1) }}</p>
+        {% else %}
+            <p style="margin: 5px 0; font-size: 11px; font-weight: bold;">SEMESTRE {{ ("now"|date('n') <= 6) ? '2' : '1' }} - ANNÉE ACADÉMIQUE {{ "now"|date('Y') }}-{{ ("now"|date('Y') + 1) }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Grille de l'emploi du temps -->
+    <table class="emploi-temps-officiel">
+        <thead>
+            <tr>
+                <th>HORAIRE</th>
+                {% for jour in jours %}
+                    <th>{{ jour|upper }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, heure in heures %}
+                {% if index < (heures|length - 1) %}
+                    {% set heureActuelle = heure %}
+                    {% set heureSuivante = heures[index + 1] %}
+                    <tr>
+                        <td class="horaire-col">{{ heureActuelle }} - {{ heureSuivante }}</td>
+                        {% for jour in jours %}
+                            {# Chercher un créneau qui commence à cette heure exacte #}
+                            {% set creneauTrouve = null %}
+                            {% set rowspan = 1 %}
+                            
+                            {% for creneau in creneauxParJour[jour] %}
+                                {% set heureDebut = creneau.heureDebut|date('H:i') %}
+                                {% if heureActuelle == heureDebut and creneauTrouve is null %}
+                                    {% set creneauTrouve = creneau %}
+                                    
+                                    {# Calculer le rowspan #}
+                                    {% set debutHeure = creneau.heureDebut|date('H')|number_format(0, '', '') %}
+                                    {% set finHeure = creneau.heureFin|date('H')|number_format(0, '', '') %}
+                                    {% set rowspan = finHeure - debutHeure %}
+                                    {% if rowspan < 1 %}{% set rowspan = 1 %}{% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {# Vérifier si cette cellule fait partie d'un créneau qui a commencé plus tôt #}
+                            {% set skipCell = false %}
+                            {% for creneau in creneauxParJour[jour] %}
+                                {% set debutHeure = creneau.heureDebut|date('H')|number_format(0, '', '') %}
+                                {% set finHeure = creneau.heureFin|date('H')|number_format(0, '', '') %}
+                                {% set heureActuelleNum = heureActuelle|slice(0, 2)|number_format(0, '', '') %}
+                                
+                                {% if heureActuelleNum > debutHeure and heureActuelleNum < finHeure %}
+                                    {% set skipCell = true %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if not skipCell %}
+                                <td {% if rowspan > 1 %}rowspan="{{ rowspan }}"{% endif %} style="height: {{ rowspan * 28 }}px; width: 120px;">
+                                    {% if creneauTrouve %}
+                                        {% set creneau = creneauTrouve %}
+                                        {% set heureDebut = creneau.heureDebut|date('H:i') %}
+                                        {% set heureFin = creneau.heureFin|date('H:i') %}
+                                        
+                                        {# Déterminer le style selon le type de cours #}
+                                        {% set styleClass = 'creneau-normal' %}
+                                        {% if creneau.cours %}
+                                            {% set coursNom = creneau.cours.nomCours|lower %}
+                                            {% if 'projet' in coursNom %}
+                                                {% set styleClass = 'type-projet' %}
+                                            {% elseif 'stage' in coursNom %}
+                                                {% set styleClass = 'type-stage' %}
+                                            {% elseif 'framework' in coursNom or 'django' in coursNom %}
+                                                {% set styleClass = 'type-framework' %}
+                                            {% elseif 'gestion' in coursNom %}
+                                                {% set styleClass = 'type-gestion' %}
+                                            {% elseif 'développement' in coursNom or 'developpement' in coursNom %}
+                                                {% set styleClass = 'type-developpement' %}
+                                            {% endif %}
+                                        {% endif %}
+                                        
+                                        {% if creneau.typeCreneau.value == 'seance' %}
+                                            <div class="creneau-normal {{ styleClass }}" style="height: 100%;">
+                                                <div class="cours-titre">
+                                                    {{ creneau.cours ? creneau.cours.nomCours : 'COURS NON ASSIGNÉ' }}
+                                                </div>
+                                                {% if creneau.enseignant %}
+                                                    <div class="enseignant-info">
+                                                        <strong>{{ creneau.enseignant.prenom }} {{ creneau.enseignant.nom }}</strong>
+                                                    </div>
+                                                    <div class="contact-info">
+                                                        Email: {{ creneau.enseignant.email|slice(0, 20) }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if creneau.salle %}
+                                                    <div class="salle-info">
+                                                        Salle {{ creneau.salle.nomSalle }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if creneau.niveau %}
+                                                    <div class="salle-info">
+                                                        {{ creneau.niveau.nomNiveau }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% elseif creneau.typeCreneau.value == 'pause' %}
+                                            <div class="cellule-vide" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                                                <span style="font-weight: bold; font-size: 6px;">PAUSE</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="cellule-vide" style="height: 100%;"></div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="cellule-vide" style="height: 28px;"></div>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pied de page officiel -->
+    <div class="pied-page">
+        <div class="validite">
+            <strong>( Valable à partir du {{ "now"|date('d') }} {{ "now"|date('F')|slice(0,3) }} {{ "now"|date('Y') }} )</strong>
+        </div>
+        
+        <div class="signature-section">
+            <div style="text-align: left;">
+                <strong>Le Chef de Département</strong><br><br><br>
+                <strong style="text-decoration: underline;">Chef Académique UGANC</strong>
+            </div>
+            
+            <div style="text-align: center;">
+                <strong>Document généré automatiquement</strong><br>
+                <em>Système de Gestion d'Emploi du Temps</em><br>
+                <small>Centre de Formation UGANC - {{ "now"|date('Y') }}</small>
+            </div>
+            
+            <div style="text-align: right;">
+                <strong>Service Académique</strong><br><br><br>
+                <strong style="text-decoration: underline;">Coordinateur Pédagogique</strong>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
