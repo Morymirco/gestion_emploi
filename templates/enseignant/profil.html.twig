@@ -1,0 +1,106 @@
+{# templates/enseignant/profil.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - Enseignant{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-user"></i> Mon Profil</h1>
+            
+            <div class="mb-4">
+                <a href="{{ path('app_enseignant_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour au tableau de bord
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-id-card"></i> Informations Personnelles</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-user-circle fa-5x text-primary"></i>
+                            </div>
+                            <h4>{{ enseignant.prenom }} {{ enseignant.nom }}</h4>
+                            <p class="text-muted">{{ enseignant.email }}</p>
+                            <span class="badge bg-success fs-6">Enseignant</span>
+                            {% if enseignant.departement %}
+                                <br><span class="badge bg-info mt-2">{{ enseignant.departement.nomDepartement }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6><i class="fas fa-chart-bar"></i> Mes Statistiques</h6>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Cours enseignés :</strong> {{ enseignant.cours|length }}</p>
+                            <p><strong>Département :</strong> {{ enseignant.departement ? enseignant.departement.nomDepartement : 'Non défini' }}</p>
+                            <p><strong>Membre depuis :</strong> Récemment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-book"></i> Mes Cours</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if enseignant.cours|length > 0 %}
+                                <div class="row">
+                                    {% for cours in enseignant.cours %}
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card border-left-primary">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">{{ cours.nomCours }}</h6>
+                                                    {% if cours.description %}
+                                                        <p class="card-text small text-muted">{{ cours.description|slice(0, 100) }}{% if cours.description|length > 100 %}...{% endif %}</p>
+                                                    {% endif %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        {% if cours.niveau %}
+                                                            <span class="badge bg-primary">{{ cours.niveau.nomNiveau }}</span>
+                                                        {% endif %}
+                                                        {% if cours.departement %}
+                                                            <span class="badge bg-info">{{ cours.departement.code }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">Aucun cours assigné pour le moment.</p>
+                                    <p class="small text-muted">Contactez l'administration pour vous assigner des cours.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar"></i> Emploi du Temps de la Semaine</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Ici on pourrait ajouter un mini calendrier de la semaine -->
+                            <div class="text-center">
+                                <a href="{{ path('enseignant_emploi_du_temps') }}" class="btn btn-primary">
+                                    <i class="fas fa-calendar-alt"></i> Voir mon emploi du temps complet
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

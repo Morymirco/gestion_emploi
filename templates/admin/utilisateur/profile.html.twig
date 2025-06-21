@@ -1,0 +1,249 @@
+{# templates/admin/utilisateur/profile.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ utilisateur.prenom }} {{ utilisateur.nom }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-user"></i> Profil de {{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
+            
+            <div class="mb-4">
+                <a href="{{ path('admin_utilisateur_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+                <a href="{{ path('admin_utilisateur_edit', {'id': utilisateur.id}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Informations personnelles -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-id-card"></i> Informations Personnelles</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Nom complet :</strong> {{ utilisateur.prenom }} {{ utilisateur.nom }}</p>
+                            <p><strong>Email :</strong> {{ utilisateur.email }}</p>
+                            <p><strong>Rôle :</strong> 
+                                {% if utilisateur.role.value == 'admin' %}
+                                    <span class="badge bg-danger">Administrateur</span>
+                                {% elseif utilisateur.role.value == 'enseignant' %}
+                                    <span class="badge bg-success">Enseignant</span>
+                                {% elseif utilisateur.role.value == 'etudiant' %}
+                                    <span class="badge bg-info">Étudiant</span>
+                                {% endif %}
+                            </p>
+                            {% if utilisateur.departement %}
+                                <p><strong>Département :</strong> {{ utilisateur.departement.nomDepartement }}</p>
+                            {% endif %}
+                            {% if utilisateur.niveau %}
+                                <p><strong>Niveau :</strong> {{ utilisateur.niveau.nomNiveau }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Statistiques -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6><i class="fas fa-chart-bar"></i> Statistiques</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if utilisateur.role.value == 'enseignant' %}
+                                <p><strong>Cours enseignés :</strong> {{ cours|length }}</p>
+                                <p><strong>Emplois du temps :</strong> {{ emploisDuTemps|length }}</p>
+                            {% elseif utilisateur.role.value == 'etudiant' %}
+                                <p><strong>Emplois du temps :</strong> {{ emploisDuTemps|length }}</p>
+                                <p><strong>Absences :</strong> {{ absences|length }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenu principal -->
+                <div class="col-md-8">
+                    {% if utilisateur.role.value == 'enseignant' %}
+                        <!-- Cours de l'enseignant -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chalkboard-teacher"></i> Cours Enseignés</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if cours|length > 0 %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cours</th>
+                                                    <th>Département</th>
+                                                    <th>Niveau</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for cour in cours %}
+                                                    <tr>
+                                                        <td>{{ cour.nomCours }}</td>
+                                                        <td>{{ cour.departement ? cour.departement.nomDepartement : 'Non défini' }}</td>
+                                                        <td>{{ cour.niveau ? cour.niveau.nomNiveau : 'Non défini' }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Aucun cours assigné.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Emplois du temps récents -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5><i class="fas fa-calendar"></i> Emplois du Temps Récents</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if emploisDuTemps|length > 0 %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Heure</th>
+                                                    <th>Cours</th>
+                                                    <th>Salle</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for emploi in emploisDuTemps %}
+                                                    <tr>
+                                                        <td>{{ emploi.date|date('d/m/Y') }}</td>
+                                                        <td>{{ emploi.heureDebut|date('H:i') }} - {{ emploi.heureFin|date('H:i') }}</td>
+                                                        <td>{{ emploi.cours ? emploi.cours.nomCours : 'Non défini' }}</td>
+                                                        <td>{{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Aucun emploi du temps programmé.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    {% elseif utilisateur.role.value == 'etudiant' %}
+                        <!-- Emplois du temps de l'étudiant -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-calendar"></i> Emplois du Temps</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if emploisDuTemps|length > 0 %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Heure</th>
+                                                    <th>Cours</th>
+                                                    <th>Salle</th>
+                                                    <th>Enseignant</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for emploi in emploisDuTemps %}
+                                                    <tr>
+                                                        <td>{{ emploi.date|date('d/m/Y') }}</td>
+                                                        <td>{{ emploi.heureDebut|date('H:i') }} - {{ emploi.heureFin|date('H:i') }}</td>
+                                                        <td>{{ emploi.cours ? emploi.cours.nomCours : 'Non défini' }}</td>
+                                                        <td>{{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}</td>
+                                                        <td>
+                                                            {% if emploi.cours and emploi.cours.enseignant %}
+                                                                {{ emploi.cours.enseignant.prenom }} {{ emploi.cours.enseignant.nom }}
+                                                            {% else %}
+                                                                Non défini
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Aucun emploi du temps disponible. Vérifiez que l'étudiant a un niveau assigné.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Absences -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-times"></i> Absences</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if absences|length > 0 %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Type</th>
+                                                    <th>Statut</th>
+                                                    <th>Justifiée</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for absence in absences %}
+                                                    <tr>
+                                                        <td>{{ absence.dateAbsence|date('d/m/Y H:i') }}</td>
+                                                        <td>{{ absence.type|capitalize }}</td>
+                                                        <td>
+                                                            <span class="badge bg-{{ absence.statut == 'approuvee' ? 'success' : (absence.statut == 'rejetee' ? 'danger' : 'warning') }}">
+                                                                {{ absence.statut|replace({'_': ' '})|title }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            {% if absence.justifiee %}
+                                                                <span class="badge bg-success">Oui</span>
+                                                            {% else %}
+                                                                <span class="badge bg-warning">Non</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Aucune absence enregistrée.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <!-- Profil administrateur -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-shield"></i> Profil Administrateur</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Cet utilisateur a les privilèges d'administrateur et peut :</p>
+                                <ul>
+                                    <li>Gérer tous les utilisateurs</li>
+                                    <li>Créer et modifier les cours</li>
+                                    <li>Planifier les emplois du temps</li>
+                                    <li>Gérer les salles et départements</li>
+                                    <li>Voir toutes les statistiques</li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

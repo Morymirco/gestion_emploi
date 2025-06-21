@@ -24,14 +24,63 @@ class AdminUtilisateurController extends AbstractController
     }
 
     #[Route('/', name: 'admin_utilisateur_index')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $utilisateurs = $this->entityManager->getRepository(Utilisateur::class)->findAll();
+        // Filtres
+        $roleFilter = $request->query->get('role');
+        $departementFilter = $request->query->get('departement');
+        $niveauFilter = $request->query->get('niveau');
+        $searchFilter = $request->query->get('search');
+
+        $queryBuilder = $this->entityManager->getRepository(Utilisateur::class)
+            ->createQueryBuilder('u')
+            ->leftJoin('u.departement', 'd')
+            ->leftJoin('u.niveau', 'n')
+            ->orderBy('u.nom', 'ASC')
+            ->addOrderBy('u.prenom', 'ASC');
+
+        if ($roleFilter) {
+            $queryBuilder->andWhere('u.role = :role')
+                        ->setParameter('role', $roleFilter);
+        }
+
+        if ($departementFilter) {
+            $queryBuilder->andWhere('u.departement = :departement')
+                        ->setParameter('departement', $departementFilter);
+        }
+
+        if ($niveauFilter) {
+            $queryBuilder->andWhere('u.niveau = :niveau')
+                        ->setParameter('niveau', $niveauFilter);
+        }
+
+        if ($searchFilter) {
+            $queryBuilder->andWhere('u.nom LIKE :search OR u.prenom LIKE :search OR u.email LIKE :search')
+                        ->setParameter('search', '%' . $searchFilter . '%');
+        }
+
+        $utilisateurs = $queryBuilder->getQuery()->getResult();
+
+        // Données pour les filtres
+        $departements = $this->entityManager->getRepository(\App\Entity\Departement::class)->findAll();
+        $niveaux = $this->entityManager->getRepository(\App\Entity\Niveau::class)->findAll();
+
+        // Statistiques
+        $stats = $this->getUserStats();
 
         return $this->render('admin/utilisateur/index.html.twig', [
             'utilisateurs' => $utilisateurs,
+            'departements' => $departements,
+            'niveaux' => $niveaux,
+            'stats' => $stats,
+            'filtres' => [
+                'role' => $roleFilter,
+                'departement' => $departementFilter,
+                'niveau' => $niveauFilter,
+                'search' => $searchFilter,
+            ]
         ]);
     }
 
@@ -103,5 +152,62 @@ class AdminUtilisateurController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_utilisateur_index');
+    }
+
+    #[Route('/{id}/profile', name: 'admin_utilisateur_profile')]
+    public function profile(Utilisateur $utilisateur): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        // Récupérer les cours de l'utilisateur selon son rôle
+        $cours = [];
+        $emploisDuTemps = [];
+        $absences = [];
+
+        if ($utilisateur->getRole()->value === 'enseignant') {
+            $cours = $utilisateur->getCours();
+            $emploisDuTemps = $this->entityManager->getRepository(\App\Entity\EmploiDuTemps::class)
+                ->createQueryBuilder('e')
+                ->leftJoin('e.cours', 'c')
+                ->where('c.enseignant = :enseignant')
+                ->setParameter('enseignant', $utilisateur)
+                ->orderBy('e.date', 'DESC')
+                ->setMaxResults(10)
+                ->getQuery()
+                ->getResult();
+        } elseif ($utilisateur->getRole()->value === 'etudiant' && $utilisateur->getNiveau()) {
+            $emploisDuTemps = $this->entityManager->getRepository(\App\Entity\EmploiDuTemps::class)
+                ->createQueryBuilder('e')
+                ->where('e.niveau = :niveau')
+                ->setParameter('niveau', $utilisateur->getNiveau())
+                ->orderBy('e.date', 'DESC')
+                ->setMaxResults(10)
+                ->getQuery()
+                ->getResult();
+        }
+
+        $absences = $utilisateur->getAbsences();
+
+        return $this->render('admin/utilisateur/profile.html.twig', [
+            'utilisateur' => $utilisateur,
+            'cours' => $cours,
+            'emploisDuTemps' => $emploisDuTemps,
+            'absences' => $absences,
+        ]);
+    }
+
+    private function getUserStats(): array
+    {
+        $totalUsers = $this->entityManager->getRepository(Utilisateur::class)->count([]);
+        $admins = $this->entityManager->getRepository(Utilisateur::class)->count(['role' => 'admin']);
+        $enseignants = $this->entityManager->getRepository(Utilisateur::class)->count(['role' => 'enseignant']);
+        $etudiants = $this->entityManager->getRepository(Utilisateur::class)->count(['role' => 'etudiant']);
+
+        return [
+            'total' => $totalUsers,
+            'admins' => $admins,
+            'enseignants' => $enseignants,
+            'etudiants' => $etudiants
+        ];
     }
 }

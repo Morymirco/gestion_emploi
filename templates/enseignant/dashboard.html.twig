@@ -4,9 +4,191 @@
 {% block title %}Tableau de bord - Enseignant{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1>Bienvenue, Enseignant !</h1>
-    <p>Vous êtes connecté en tant qu'enseignant.</p>
-    <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-chalkboard-teacher"></i> Tableau de bord Enseignant</h1>
+            <p class="lead">Bienvenue, {{ enseignant.prenom }} {{ enseignant.nom }}</p>
+
+            <!-- Statistiques -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-book"></i> {{ stats.total_cours }}</h5>
+                            <p class="mb-0">Cours Enseignés</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-calendar-week"></i> {{ stats.cours_cette_semaine }}</h5>
+                            <p class="mb-0">Cours Cette Semaine</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-calendar-alt"></i> {{ stats.total_emplois }}</h5>
+                            <p class="mb-0">Emplois Programmés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <a href="{{ path('enseignant_profil') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-user"></i><br>Mon Profil
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('enseignant_mes_cours') }}" class="btn btn-outline-success w-100 mb-2">
+                        <i class="fas fa-book"></i><br>Mes Cours
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('enseignant_emploi_du_temps') }}" class="btn btn-outline-info w-100 mb-2">
+                        <i class="fas fa-calendar"></i><br>Mon Emploi du Temps
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline-danger w-100 mb-2">
+                        <i class="fas fa-sign-out-alt"></i><br>Se Déconnecter
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Prochains cours -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-day"></i> Prochains Cours (Cette Semaine)</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if prochainsCours|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Heure</th>
+                                                <th>Cours</th>
+                                                <th>Salle</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for emploi in prochainsCours %}
+                                                <tr>
+                                                    <td>{{ emploi.date|date('d/m') }}</td>
+                                                    <td>{{ emploi.heureDebut|date('H:i') }}</td>
+                                                    <td>{{ emploi.cours ? emploi.cours.nomCours : 'Non défini' }}</td>
+                                                    <td>{{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Aucun cours programmé cette semaine.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mes cours -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-book"></i> Mes Cours</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if cours|length > 0 %}
+                                <div class="list-group list-group-flush">
+                                    {% for cour in cours|slice(0, 5) %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ cour.nomCours }}</strong>
+                                                {% if cour.niveau %}
+                                                    <br><small class="text-muted">{{ cour.niveau.nomNiveau }}</small>
+                                                {% endif %}
+                                            </div>
+                                            {% if cour.departement %}
+                                                <span class="badge bg-primary">{{ cour.departement.code }}</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if cours|length > 5 %}
+                                    <div class="text-center mt-3">
+                                        <a href="{{ path('enseignant_mes_cours') }}" class="btn btn-sm btn-outline-primary">
+                                            Voir tous mes cours ({{ cours|length }})
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">Aucun cours assigné.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emplois du temps récents -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-alt"></i> Emplois du Temps à Venir</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if emploisDuTemps|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Heure</th>
+                                                <th>Durée</th>
+                                                <th>Cours</th>
+                                                <th>Salle</th>
+                                                <th>Niveau</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for emploi in emploisDuTemps %}
+                                                <tr>
+                                                    <td>
+                                                        <strong>{{ emploi.date|date('d/m/Y') }}</strong><br>
+                                                        <small class="text-muted">{{ emploi.date|date('l') }}</small>
+                                                    </td>
+                                                    <td>{{ emploi.heureDebut|date('H:i') }} - {{ emploi.heureFin|date('H:i') }}</td>
+                                                    <td><span class="badge bg-info">{{ emploi.duree }}</span></td>
+                                                    <td>{{ emploi.cours ? emploi.cours.nomCours : 'Non défini' }}</td>
+                                                    <td>{{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}</td>
+                                                    <td>{{ emploi.niveau ? emploi.niveau.nomNiveau : 'Non défini' }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{{ path('enseignant_emploi_du_temps') }}" class="btn btn-primary">
+                                        Voir tout mon emploi du temps
+                                    </a>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Aucun emploi du temps programmé.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

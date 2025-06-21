@@ -21,11 +21,11 @@ app_admin_dashboard:
 
 app_enseignant_dashboard:
     path: /enseignant/dashboard
-    controller: App\Controller\AuthController::enseignantDashboard
+    controller: App\Controller\EnseignantController::dashboard
 
 app_etudiant_dashboard:
     path: /etudiant/dashboard
-    controller: App\Controller\AuthController::etudiantDashboard
+    controller: App\Controller\EtudiantController::dashboard
 
 admin_utilisateur_index:
     path: /admin/utilisateur
@@ -43,6 +43,36 @@ admin_utilisateur_delete:
     path: /admin/utilisateur/{id}/delete
     controller: App\Controller\AdminUtilisateurController::delete
     methods: [POST]
+
+admin_utilisateur_profile:
+    path: /admin/utilisateur/{id}/profile
+    controller: App\Controller\AdminUtilisateurController::profile
+
+# Routes Enseignant
+enseignant_profil:
+    path: /enseignant/profil
+    controller: App\Controller\EnseignantController::profil
+
+enseignant_mes_cours:
+    path: /enseignant/mes-cours
+    controller: App\Controller\EnseignantController::mesCours
+
+enseignant_emploi_du_temps:
+    path: /enseignant/emploi-du-temps
+    controller: App\Controller\EnseignantController::emploiDuTemps
+
+# Routes Étudiant
+etudiant_profil:
+    path: /etudiant/profil
+    controller: App\Controller\EtudiantController::profil
+
+etudiant_emploi_du_temps:
+    path: /etudiant/emploi-du-temps
+    controller: App\Controller\EtudiantController::emploiDuTemps
+
+etudiant_mes_absences:
+    path: /etudiant/mes-absences
+    controller: App\Controller\EtudiantController::mesAbsences
 
 admin_niveau_index:
     path: /admin/niveau
@@ -124,7 +154,6 @@ admin_emploi_du_temps_export:
     path: /admin/emploi-du-temps/export
     controller: App\Controller\AdminEmploiDuTempsController::export
 
-
 admin_salle_index:
     path: /admin/salle
     controller: App\Controller\AdminSalleController::index
@@ -141,6 +170,10 @@ admin_salle_delete:
     path: /admin/salle/{id}/delete
     controller: App\Controller\AdminSalleController::delete
     methods: [POST]
+
+admin_salle_disponibilite:
+    path: /admin/salle/{id}/disponibilite
+    controller: App\Controller\AdminSalleController::disponibilite
 
 admin_module_index:
     path: /admin/module

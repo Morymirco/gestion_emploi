@@ -4,9 +4,215 @@
 {% block title %}Tableau de bord - Étudiant{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1>Bienvenue, Étudiant !</h1>
-    <p>Vous êtes connecté en tant qu'étudiant.</p>
-    <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-user-graduate"></i> Tableau de bord Étudiant</h1>
+            <p class="lead">Bienvenue, {{ etudiant.prenom }} {{ etudiant.nom }}</p>
+
+            <!-- Statistiques -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-calendar-week"></i> {{ stats.cours_cette_semaine }}</h5>
+                            <p class="mb-0">Cours Cette Semaine</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-user-times"></i> {{ stats.total_absences }}</h5>
+                            <p class="mb-0">Absences Totales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5><i class="fas fa-graduation-cap"></i> {{ stats.niveau }}</h5>
+                            <p class="mb-0">Mon Niveau</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <a href="{{ path('etudiant_profil') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-user"></i><br>Mon Profil
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('etudiant_emploi_du_temps') }}" class="btn btn-outline-success w-100 mb-2">
+                        <i class="fas fa-calendar"></i><br>Mon Emploi du Temps
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('etudiant_mes_absences') }}" class="btn btn-outline-warning w-100 mb-2">
+                        <i class="fas fa-user-times"></i><br>Mes Absences
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline-danger w-100 mb-2">
+                        <i class="fas fa-sign-out-alt"></i><br>Se Déconnecter
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Prochains cours -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-day"></i> Prochains Cours (Cette Semaine)</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if prochainsCours|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Heure</th>
+                                                <th>Cours</th>
+                                                <th>Salle</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for emploi in prochainsCours %}
+                                                <tr>
+                                                    <td>{{ emploi.date|date('d/m') }}</td>
+                                                    <td>{{ emploi.heureDebut|date('H:i') }}</td>
+                                                    <td>{{ emploi.cours ? emploi.cours.nomCours : 'Non défini' }}</td>
+                                                    <td>{{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Aucun cours programmé cette semaine.</p>
+                                {% if not etudiant.niveau %}
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Aucun niveau assigné. Contactez l'administration pour voir votre emploi du temps.
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mes absences récentes -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-user-times"></i> Mes Absences Récentes</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if absences|length > 0 %}
+                                <div class="list-group list-group-flush">
+                                    {% for absence in absences|slice(0, 5) %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ absence.dateAbsence|date('d/m/Y') }}</strong>
+                                                <br><small class="text-muted">{{ absence.type|capitalize }}</small>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-{{ absence.statut == 'approuvee' ? 'success' : (absence.statut == 'rejetee' ? 'danger' : 'warning') }}">
+                                                    {{ absence.statut|replace({'_': ' '})|title }}
+                                                </span>
+                                                {% if absence.justifiee %}
+                                                    <br><span class="badge bg-success">Justifiée</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if absences|length > 5 %}
+                                    <div class="text-center mt-3">
+                                        <a href="{{ path('etudiant_mes_absences') }}" class="btn btn-sm btn-outline-warning">
+                                            Voir toutes mes absences ({{ absences|length }})
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">Aucune absence enregistrée.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emplois du temps à venir -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-alt"></i> Emplois du Temps à Venir</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if emploisDuTemps|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Heure</th>
+                                                <th>Durée</th>
+                                                <th>Cours</th>
+                                                <th>Salle</th>
+                                                <th>Enseignant</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for emploi in emploisDuTemps %}
+                                                <tr>
+                                                    <td>
+                                                        <strong>{{ emploi.date|date('d/m/Y') }}</strong><br>
+                                                        <small class="text-muted">{{ emploi.date|date('l') }}</small>
+                                                    </td>
+                                                    <td>{{ emploi.heureDebut|date('H:i') }} - {{ emploi.heureFin|date('H:i') }}</td>
+                                                    <td><span class="badge bg-info">{{ emploi.duree }}</span></td>
+                                                    <td>{{ emploi.cours ? emploi.cours.nomCours : 'Non défini' }}</td>
+                                                    <td>{{ emploi.salle ? emploi.salle.nomSalle : 'Non définie' }}</td>
+                                                    <td>
+                                                        {% if emploi.cours and emploi.cours.enseignant %}
+                                                            {{ emploi.cours.enseignant.prenom }} {{ emploi.cours.enseignant.nom }}
+                                                        {% else %}
+                                                            Non défini
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{{ path('etudiant_emploi_du_temps') }}" class="btn btn-primary">
+                                        Voir tout mon emploi du temps
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">Aucun emploi du temps disponible.</p>
+                                    {% if not etudiant.niveau %}
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Vous n'avez pas de niveau assigné. Contactez l'administration pour résoudre ce problème.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
