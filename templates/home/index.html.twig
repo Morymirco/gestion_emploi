@@ -1,31 +1,89 @@
-{# templates/home/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Accueil - UGANC{% endblock %}
 
 {% block body %}
-<div class="container mt-5 text-center">
-    <h1>Bienvenue sur UGANC - Gestion des Emplois du Temps</h1>
-    <p class="lead">Organisez vos cours et consultez vos emplois du temps facilement.</p>
-
-    {% if app.user %}
-        <p>Vous êtes connecté en tant que {{ app.user.email }}.</p>
-        {% if is_granted('ROLE_ADMIN') %}
-            <a href="{{ path('app_admin_dashboard') }}" class="btn btn-primary mt-3">Tableau de bord Admin</a>
-        {% elseif is_granted('ROLE_ENSEIGNANT') %}
-            <a href="{{ path('app_enseignant_dashboard') }}" class="btn btn-primary mt-3">Tableau de bord Enseignant</a>
-        {% elseif is_granted('ROLE_ETUDIANT') %}
-            <a href="{{ path('app_etudiant_dashboard') }}" class="btn btn-primary mt-3">Tableau de bord Étudiant</a>
-        {% endif %}
-    {% else %}
-        <div class="mt-4">
-            <a href="{{ path('app_login') }}" class="btn btn-success me-2">Se connecter</a>
-            <a href="{{ path('app_register') }}" class="btn btn-primary">S'inscrire</a>
+<div class="container mt-5">
+    <!-- En-tête principal -->
+    <div class="text-center mb-5">
+        <div class="d-inline-block bg-primary text-white rounded-circle p-3 mb-3">
+            <i class="fas fa-calendar-alt fa-2x"></i>
         </div>
-    {% endif %}
-
-    <div class="mt-5">
-        <p>UGANC - © {{ 'now'|date('Y') }} - Gestion des emplois du temps pour tous.</p>
+        <h1 class="display-4 fw-bold text-dark">Bienvenue sur UGANC</h1>
+        <p class="lead text-muted">Gestion intuitive des emplois du temps pour tous.</p>
+        <hr class="w-25 mx-auto border-primary border-2">
     </div>
+
+    <!-- Section utilisateur -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body text-center p-4">
+                    {% if app.user %}
+                        <h5 class="card-title text-primary mb-3">Bonjour, {{ app.user.email }} !</h5>
+                        <p class="card-text text-muted mb-4">Accédez à votre tableau de bord personnalisé :</p>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_admin_dashboard') }}" class="btn btn-primary btn-lg w-100 mb-2 transition-all">
+                                <i class="fas fa-tachometer-alt me-2"></i> Tableau de bord Admin
+                            </a>
+                        {% elseif is_granted('ROLE_ENSEIGNANT') %}
+                            <a href="{{ path('app_enseignant_dashboard') }}" class="btn btn-primary btn-lg w-100 mb-2 transition-all">
+                                <i class="fas fa-chalkboard-teacher me-2"></i> Tableau de bord Enseignant
+                            </a>
+                        {% elseif is_granted('ROLE_ETUDIANT') %}
+                            <a href="{{ path('app_etudiant_dashboard') }}" class="btn btn-primary btn-lg w-100 mb-2 transition-all">
+                                <i class="fas fa-user-graduate me-2"></i> Tableau de bord Étudiant
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <h5 class="card-title text-primary mb-3">Rejoignez UGANC dès aujourd'hui !</h5>
+                        <p class="card-text text-muted mb-4">Connectez-vous ou inscrivez-vous pour gérer vos emplois du temps.</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{{ path('app_login') }}" class="btn btn-success btn-lg transition-all">
+                                <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+                            </a>
+                            <a href="{{ path('app_register') }}" class="btn btn-outline-primary btn-lg transition-all">
+                                <i class="fas fa-user-plus me-2"></i> S'inscrire
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="mt-5 py-4 text-center text-muted border-top">
+        <p class="mb-0">UGANC - © {{ 'now'|date('Y') }} - Gestion des emplois du temps pour tous.</p>
+    </footer>
 </div>
+
+<!-- Styles personnalisés -->
+<style>
+/* Effet de transition pour les boutons */
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.transition-all:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajustements pour la responsivité */
+@media (max-width: 576px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .lead {
+        font-size: 1rem;
+    }
+
+    .btn-lg {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+}
+</style>
 {% endblock %}
